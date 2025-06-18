@@ -9,7 +9,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async login({ username }: { username: string }) {
+  async validate({ username }: { username: string }) {
     const user = await this.prisma.user.findUnique({
       where: {
         username: username,

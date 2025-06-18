@@ -12,11 +12,18 @@ api.interceptors.response.use(
     if (axios.isAxiosError(error)) {
       const status = error.response?.status;
       const data = error.response?.data;
-      console.log(`[${status}]`, data);
+      const isUnauthorized = data?.statusCode === 401;
+
+      if (isUnauthorized && typeof window !== "undefined") {
+        window.location.href = "/auth/login";
+        return;
+      }
+
+      console.warn(`[${status}]`, data);
       return Promise.reject(data ?? { message: "Unknown Axios error" });
     }
 
-    console.log("Unexpected Error:", error);
+    console.warn("Unexpected Error:", error);
     return Promise.reject({ message: "Unexpected error occurred" });
   }
 );

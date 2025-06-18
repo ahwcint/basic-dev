@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  UnauthorizedException,
 } from '@nestjs/common';
 import {
   PrismaClientKnownRequestError,
@@ -52,6 +53,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       errors = exception.flatten().fieldErrors;
     } else if (exception instanceof Error) {
       message = exception.message;
+    }
+
+    if (exception instanceof UnauthorizedException) {
+      status = HttpStatus.UNAUTHORIZED;
+      response.clearCookie('token', { path: '/' });
     }
 
     response.status(400).json({

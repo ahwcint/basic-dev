@@ -18,7 +18,7 @@ export class AuthController {
   ) {
     const safePayload = LoginSchema.parse(body);
 
-    const { token } = await this.authService.login(safePayload);
+    const { token } = await this.authService.validate(safePayload);
     res.cookie(COOKIE_TOKEN, token, {
       httpOnly: true,
       secure: false,

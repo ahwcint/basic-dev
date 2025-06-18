@@ -114,10 +114,39 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    @apply box-border;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
+
+  html,
   body {
+    @apply p-0 m-0;
     @apply bg-background text-foreground;
+    @apply antialiased;
+    height: 100%;
+  }
+  body {
+    @apply min-h-screen leading-normal;
+    font-family: theme('fontFamily.sans');
+  }
+
+  a {
+    @apply text-foreground hover:underline;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  img,
+  video {
+    @apply max-w-full h-auto;
+    display: block;
   }
 }
