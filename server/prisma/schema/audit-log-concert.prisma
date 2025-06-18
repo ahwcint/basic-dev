@@ -1,0 +1,14 @@
+enum ConcertAction {
+    CANCEL
+    RESERVE
+}
+
+model AuditLogConcert {
+    id        String        @id @default(uuid())
+    action    ConcertAction
+    concertId String
+    concert   Concert?      @relation(fields: [concertId], references: [id])
+    userId    String
+    User      User?         @relation(fields: [userId], references: [id])
+    createdAt DateTime      @default(now())
+}

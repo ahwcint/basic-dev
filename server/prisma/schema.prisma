@@ -6,35 +6,3 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-model User {
-  id               String            @id @default(uuid())
-  username         String            @unique
-  createdAt        DateTime          @default(now())
-  auditLogConcerts AuditLogConcert[]
-}
-
-model Concert {
-  id               String            @id @default(uuid())
-  active           Boolean           @default(true)
-  name             String
-  description      String
-  totalSeats        Int
-  auditLogConcerts AuditLogConcert[]
-  createdAt        DateTime          @default(now())
-}
-
-enum ConcertAction {
-  CANCEL
-  RESERVE
-}
-
-model AuditLogConcert {
-  id        String        @id @default(uuid())
-  action    ConcertAction
-  concertId String
-  concert   Concert?      @relation(fields: [concertId], references: [id])
-  userId    String
-  User      User?         @relation(fields: [userId], references: [id])
-  createdAt DateTime      @default(now())
-}

@@ -1,0 +1,9 @@
+model Concert {
+  id               String            @id @default(uuid())
+  active           Boolean           @default(true)
+  name             String
+  description      String
+  totalSeats        Int
+  auditLogConcerts AuditLogConcert[]
+  createdAt        DateTime          @default(now())
+}
