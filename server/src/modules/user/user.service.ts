@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from './user.schema';
+import { ChangeRoleUserDto, CreateUserDto } from './user.schema';
 import { BaseListRequestDto } from 'src/common/schema/type';
 
 @Injectable()
@@ -17,6 +17,21 @@ export class UserService {
     return this.prisma.user.findMany({
       skip: Math.max(page - 1, 0),
       take: pageSize,
+    });
+  }
+
+  async findOne(id: string) {
+    return this.prisma.user.findUnique({ where: { id } });
+  }
+
+  async changeRoleUser(payload: ChangeRoleUserDto) {
+    return this.prisma.user.update({
+      where: {
+        id: payload.userId,
+      },
+      data: {
+        role: payload.role,
+      },
     });
   }
 }

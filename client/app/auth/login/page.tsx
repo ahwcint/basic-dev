@@ -8,7 +8,6 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
+import { useEffect, useRef } from "react";
 
 const loginSchema = z.object({
   username: z.string().min(1).max(20),
@@ -28,6 +28,7 @@ type loginDto = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const auth = useAuth();
+  const isRun = useRef(false);
   const router = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -51,9 +52,16 @@ export default function LoginPage() {
       router.refresh();
     }
   };
+
+  useEffect(() => {
+    if (isRun.current) return;
+    isRun.current = true;
+
+    if (auth.user) auth.setUser(undefined);
+  }, [auth]);
   return (
-    <div>
-      <Card>
+    <div className="p-1 bg-gray-300 h-full flex justify-center items-center">
+      <Card className="max-w-md w-full">
         <CardHeader>Login</CardHeader>
         <CardContent>
           <Form {...form}>
@@ -63,16 +71,17 @@ export default function LoginPage() {
                 name="username"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>username</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input placeholder="USERNAME" {...field} />
                     </FormControl>
                     <FormDescription />
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit">Login</Button>
+              <Button type="submit" className="float-right">
+                Login
+              </Button>
             </form>
           </Form>
         </CardContent>

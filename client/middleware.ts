@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { NextRequest } from "next/server";
 
-export default function middleware(req: NextRequest) {
-  const token = req.cookies.get("token");
+export default async function middleware(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  const refreshToken = req.cookies.get("refresh_token");
 
-  const isToken = !!token;
+  const isRefreshToken = !!refreshToken;
   const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
 
-  if (!isToken && !isAuthPage) {
-    const url = req.nextUrl.clone();
+  if (!isRefreshToken && !isAuthPage) {
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);
   }
 
-  if (isToken && isAuthPage) {
-    const url = req.nextUrl.clone();
-    url.pathname = "/";
+  if (isRefreshToken && isAuthPage) {
+    url.pathname = "/home";
     return NextResponse.redirect(url);
   }
 

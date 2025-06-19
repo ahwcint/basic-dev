@@ -7,17 +7,29 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
-import type { Response } from 'express';
+import { Request, type Response } from 'express';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(private reflector: Reflector) {
     super();
   }
-
-  handleRequest<TUser = any>(err: any, user: any): TUser {
+  handleRequest<TUser = any>(
+    err: any,
+    user: any,
+    info: any,
+    context: ExecutionContext,
+  ): TUser {
+    const req = context.switchToHttp().getRequest<Request>();
+    const cookies = req.cookies;
+    const refreshToken = cookies['refresh_token'] as string;
     if (err || !user)
-      throw err || new UnauthorizedException('Invalid or expired token');
+      throw (
+        err ||
+        new UnauthorizedException('Invalid or expired token', {
+          cause: { refreshToken },
+        })
+      );
 
     return user as TUser;
   }

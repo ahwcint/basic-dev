@@ -9,8 +9,8 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          const token = (req?.cookies as { token: string })?.token || null;
-          return token;
+          const token = req?.cookies.token as string | undefined;
+          return token || null;
         },
         ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
@@ -19,7 +19,7 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: { sub: string }) {
-    return { username: payload.sub };
+  validate(payload: { sub: string; user: unknown }) {
+    return { user: payload.user };
   }
 }

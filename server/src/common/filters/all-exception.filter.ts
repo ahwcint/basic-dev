@@ -3,18 +3,28 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
 import { Request, Response } from 'express';
+import { AuthService } from 'src/modules/auth/auth.service';
+import { UserService } from 'src/modules/user/user.service';
 import { ZodError } from 'zod';
 
+@Injectable()
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+  ) {}
+
+  async catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -34,12 +44,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
             target: exception.meta?.target,
           };
           break;
-
         case 'P2025':
           status = HttpStatus.NOT_FOUND;
           message = (exception.meta?.cause || 'Record not found') as string;
           break;
-
         default:
           status = HttpStatus.BAD_REQUEST;
           message = exception.message;
@@ -57,7 +65,26 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     if (exception instanceof UnauthorizedException) {
       status = HttpStatus.UNAUTHORIZED;
-      response.clearCookie('token', { path: '/' });
+      const jwt = new JwtService({
+        secret: process.env.JWT_SECRET || 'secret-1234',
+      });
+      const refreshToken =
+        (exception.cause as { refreshToken: string })?.refreshToken || '';
+
+      if (!refreshToken) {
+        response.clearCookie('refresh_token', { path: '/' });
+      } else {
+        try {
+          jwt.verify(refreshToken);
+          const data = jwt.decode<{ sub: string }>(refreshToken);
+          const user = await this.userService.findOne(data.sub);
+          status = HttpStatus.UNPROCESSABLE_ENTITY;
+          this.authService.refreshToken(data.sub, user, response);
+        } catch {
+          response.clearCookie('refresh_token', { path: '/' });
+          response.clearCookie('token', { path: '/' });
+        }
+      }
     }
 
     response.status(400).json({
