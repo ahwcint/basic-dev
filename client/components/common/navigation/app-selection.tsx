@@ -36,7 +36,7 @@ export function AppSelection({ isMobile }: { isMobile: boolean }) {
         </DropdownMenuLabel>
         <DropdownMenuGroup className="**:data-[slot=dropdown-menu-item]:cursor-pointer">
           <DropdownMenuItem>Todo</DropdownMenuItem>
-          <DropdownMenuItem>Jari</DropdownMenuItem>
+          <DropdownMenuItem>Dari</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

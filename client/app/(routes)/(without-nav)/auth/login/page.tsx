@@ -69,7 +69,6 @@ export default function LoginPage() {
                   />
                 )}
               />
-
               <Button type="submit" className="float-right">
                 Login
               </Button>
