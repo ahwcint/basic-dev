@@ -31,8 +31,8 @@ export default function RegisterPage() {
     },
   });
 
-  const onSubmit = async (values: registerDto) => {
-    return await auth.register(values, true);
+  const onSubmit = (values: registerDto) => {
+    auth.register({ payload: values, redirect: true });
   };
 
   useEffect(() => {
@@ -41,6 +41,10 @@ export default function RegisterPage() {
 
     if (auth.user) auth.setUser(undefined);
   }, [auth]);
+
+  useEffect(() => {
+    router.prefetch("/home");
+  }, [router]);
   return (
     <div className="p-1 h-full flex justify-center items-center">
       <Card className="max-w-md w-full">

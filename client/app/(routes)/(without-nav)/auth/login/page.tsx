@@ -35,7 +35,11 @@ export default function LoginPage() {
 
   const onSubmit = async (values: loginDto) => {
     setLoading(true);
-    auth.login(values, true).finally(() => setLoading(false));
+    auth.login({
+      payload: values,
+      onSettled: () => setLoading(false),
+      redirect: true,
+    });
   };
 
   useEffect(() => {

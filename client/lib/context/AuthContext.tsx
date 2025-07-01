@@ -19,17 +19,17 @@ import { User } from "@/services/types/user.type";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
+type AuthFn = (props: {
+  payload: { username: string; password: string };
+  onSettled?: () => void;
+  redirect?: boolean;
+}) => void;
+
 type AuthContextType = {
   user: User | undefined;
   setUser: (data: User | undefined) => void;
-  login: (
-    payload: { username: string; password: string },
-    redirect?: boolean
-  ) => void;
-  register: (
-    payload: { username: string; password: string },
-    redirect?: boolean
-  ) => void;
+  login: AuthFn;
+  register: AuthFn;
   logout: (redirect: boolean) => void;
 };
 
@@ -60,13 +60,15 @@ export function AuthProvider({
   });
 
   const login: AuthContextType["login"] = useCallback(
-    async (payload, redirect = false) => {
+    ({ payload, onSettled, redirect = false }) => {
       loginServiceApi(payload, {
         onSuccess: (res) => {
           toast.success(res.message);
           setUserState(res.data);
+          console.log("object");
           if (res.success && redirect) router.replace(redirectRoute);
         },
+        onSettled,
       });
     },
     [loginServiceApi, router]
@@ -82,12 +84,13 @@ export function AuthProvider({
   );
 
   const register: AuthContextType["register"] = useCallback(
-    (payload, redirect = false) => {
+    ({ payload, onSettled, redirect = false }) => {
       registerServiceApi(payload, {
         onSuccess: (res) => {
           if (res.success && redirect) router.replace(redirectRoute);
           setUserState(res.data);
         },
+        onSettled,
       });
     },
     [registerServiceApi, router]
