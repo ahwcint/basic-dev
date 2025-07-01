@@ -22,6 +22,7 @@ import { toast } from "sonner";
 type AuthFn = (props: {
   payload: { username: string; password: string };
   onSettled?: () => void;
+  onSuccess?: () => void;
 }) => void;
 
 type AuthContextType = {
@@ -58,11 +59,12 @@ export function AuthProvider({
   });
 
   const login: AuthContextType["login"] = useCallback(
-    ({ payload, onSettled }) => {
+    ({ payload, onSettled, onSuccess }) => {
       loginServiceApi(payload, {
         onSuccess: (res) => {
           toast.success(res.message);
           setUserState(res.data);
+          onSuccess?.();
         },
         onSettled,
       });
@@ -81,10 +83,11 @@ export function AuthProvider({
   );
 
   const register: AuthContextType["register"] = useCallback(
-    ({ payload, onSettled }) => {
+    ({ payload, onSettled, onSuccess }) => {
       registerServiceApi(payload, {
         onSuccess: (res) => {
           setUserState(res.data);
+          onSuccess?.();
         },
         onSettled,
       });

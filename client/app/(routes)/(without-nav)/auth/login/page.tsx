@@ -36,7 +36,11 @@ export default function LoginPage() {
     setLoading(true);
     login({
       payload: values,
-      onSettled: () => router.replace('/home'),
+      onSuccess: () =>
+        setTimeout(() => {
+          router.replace("/home");
+        }, 300),
+      onSettled: () => setLoading(false),
     });
   };
   return (

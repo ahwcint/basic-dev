@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/lib/context/AuthContext";
 import { BaseFormField } from "@/components/common/form/BaseFormField";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const registerSchema = z.object({
   username: z.string().min(1).max(20),
@@ -21,18 +22,25 @@ type registerDto = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
+  const [loading, setLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",
       password: "",
     },
+    disabled: loading,
   });
 
   const onSubmit = (values: registerDto) => {
+    setLoading(true);
     register({
       payload: values,
-      onSettled: () => router.replace("/home"),
+      onSuccess: () =>
+        setTimeout(() => {
+          router.replace("/home");
+        }, 300),
+      onSettled: () => setLoading(false),
     });
   };
   return (
