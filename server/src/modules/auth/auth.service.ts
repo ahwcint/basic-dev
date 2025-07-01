@@ -19,6 +19,9 @@ export class AuthService {
      */
     res: Response | undefined,
   ) {
+    /**
+     * 1. find user and prevent time tracking
+     */
     const user = await this.prisma.user.findUnique({
       where: {
         username,
@@ -33,19 +36,28 @@ export class AuthService {
       throw new BadRequestException('username or password invalid');
     }
 
+    /**
+     * 2. separate password from user and compare password with bcrybt
+     */
     const { password: hashedPassword, ...safeUser } = user;
     const isValidPassword = await bcrypt.compare(password, hashedPassword);
     if (!isValidPassword)
       throw new BadRequestException('username or password invalid');
 
+    /**
+     * 3. create token for user
+     */
     const payload = { sub: user.id };
-
     const token = this.jwtService.sign(
       { ...payload, user: safeUser },
       { expiresIn: '15m' },
     );
     const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
     const isProduction = process.env.NODE_ENV === 'production';
+
+    /**
+     * 4. set cookie via response
+     */
     if (res) {
       res.cookie(COOKIE_REFRESH_TOKEN, refresh_token, {
         httpOnly: true,
