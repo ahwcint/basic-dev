@@ -40,10 +40,8 @@ export default function LoginPage() {
       redirect: true,
     });
   };
-  console.log('user1 :>> ', user);
   useEffect(() => {
-  console.log('user2 :>> ', user);
-    if (user) router.refresh();
+    if (user) router.replace('/home');
   }, [user, router]);
 
   useEffect(() => {

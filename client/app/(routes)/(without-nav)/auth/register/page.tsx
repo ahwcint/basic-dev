@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/lib/context/AuthContext";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { BaseFormField } from "@/components/common/form/BaseFormField";
 import { useRouter } from "next/navigation";
 
@@ -21,8 +21,7 @@ type registerDto = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const auth = useAuth();
-  const isRun = useRef(false);
+  const { user, register } = useAuth();
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -32,15 +31,12 @@ export default function RegisterPage() {
   });
 
   const onSubmit = (values: registerDto) => {
-    auth.register({ payload: values, redirect: true });
+    register({ payload: values, redirect: true });
   };
 
   useEffect(() => {
-    if (isRun.current) return;
-    isRun.current = true;
-
-    if (auth.user) auth.setUser(undefined);
-  }, [auth]);
+    if (user) router.replace("/home");
+  }, [user, router]);
 
   useEffect(() => {
     router.prefetch("/home");
