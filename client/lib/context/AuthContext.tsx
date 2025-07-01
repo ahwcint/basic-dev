@@ -46,7 +46,6 @@ export function AuthProvider({
   isTokenExpired: boolean | undefined;
 }) {
   const router = useRouter();
-  const redirectRoute = "/home";
   const [userState, setUserState] = useState<User | undefined>(user);
   const { mutate: registerServiceApi } = useMutation({
     mutationKey: ["register-user"],
@@ -60,18 +59,16 @@ export function AuthProvider({
   });
 
   const login: AuthContextType["login"] = useCallback(
-    ({ payload, onSettled, redirect = false }) => {
+    ({ payload, onSettled }) => {
       loginServiceApi(payload, {
         onSuccess: (res) => {
           toast.success(res.message);
           setUserState(res.data);
-          console.log('res.success :>> ', res.success);
-          if (res.success && redirect) router.push(redirectRoute);
         },
         onSettled,
       });
     },
-    [loginServiceApi, router]
+    [loginServiceApi]
   );
 
   const logout = useCallback(
@@ -84,16 +81,15 @@ export function AuthProvider({
   );
 
   const register: AuthContextType["register"] = useCallback(
-    ({ payload, onSettled, redirect = false }) => {
+    ({ payload, onSettled }) => {
       registerServiceApi(payload, {
         onSuccess: (res) => {
-          if (res.success && redirect) router.push(redirectRoute);
           setUserState(res.data);
         },
         onSettled,
       });
     },
-    [registerServiceApi, router]
+    [registerServiceApi]
   );
 
   const refreshToken = useCallback(async () => {

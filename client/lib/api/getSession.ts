@@ -11,7 +11,7 @@ export async function getSession() {
   const token = awaitedCookies.get("token")?.value || "";
   let isRefreshTokenExpired = false;
   let isTokenExpired = false;
-  if (!refreshToken) return;
+  if (!refreshToken) return {};
 
   let refreshTokenData: TokenData = {} as TokenData;
   let tokenData: TokenData = {} as TokenData;

@@ -9,7 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { BaseFormField } from "@/components/common/form/BaseFormField";
 
 const loginSchema = z.object({
@@ -20,8 +20,7 @@ const loginSchema = z.object({
 type loginDto = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const auth = useAuth();
-  const isRun = useRef(false);
+  const { login, user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const form = useForm({
@@ -35,19 +34,17 @@ export default function LoginPage() {
 
   const onSubmit = async (values: loginDto) => {
     setLoading(true);
-    auth.login({
+    login({
       payload: values,
       onSettled: () => setLoading(false),
       redirect: true,
     });
   };
-
+  console.log('user1 :>> ', user);
   useEffect(() => {
-    if (isRun.current) return;
-    isRun.current = true;
-
-    if (auth.user) auth.setUser(undefined);
-  }, [auth]);
+  console.log('user2 :>> ', user);
+    if (user) router.refresh();
+  }, [user, router]);
 
   useEffect(() => {
     router.prefetch("/home");

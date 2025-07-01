@@ -24,12 +24,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
+  const { user, isRefreshTokenExpired, isTokenExpired } = await getSession();
   return (
     <html lang="en" className={notoSansThai.variable} suppressHydrationWarning>
-      <body
-        className={cn("flex m-auto rounded overflow-clip border")}
-      >
+      <body className={cn("flex m-auto rounded overflow-clip border")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -38,9 +36,9 @@ export default async function RootLayout({
         >
           <MainQueryClientProvider>
             <AuthProvider
-              user={session?.user || undefined}
-              isRefreshTokenExpired={session?.isRefreshTokenExpired}
-              isTokenExpired={session?.isTokenExpired}
+              user={user || undefined}
+              isRefreshTokenExpired={isRefreshTokenExpired}
+              isTokenExpired={isTokenExpired}
             >
               {children}
               <Toaster richColors position="top-right" />
