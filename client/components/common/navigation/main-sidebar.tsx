@@ -20,18 +20,28 @@ import { AppSelection } from "./app-selection";
 import { FooterSidebar } from "./footer-sidebar";
 import { SettingsIcon } from "lucide-react";
 
-export function MainSideBar({ children }: PropsWithChildren) {
+export function MainSideBarWrapper({ children }: PropsWithChildren) {
   return (
     <SidebarProvider>
-      <AppSideBar />
-      <SidebarTrigger className="mt-2" />
-      {children}
+      <MainSideBar>{children}</MainSideBar>
     </SidebarProvider>
   );
 }
 
-function AppSideBar() {
+function MainSideBar({ children }: PropsWithChildren) {
   const { isMobile } = useSidebar();
+  return (
+    <>
+      <AppSideBar isMobile={isMobile} />
+      {children}
+      {isMobile && (
+        <SidebarTrigger className="mt-2 absolute top-0 right-2" size="lg" />
+      )}
+    </>
+  );
+}
+
+function AppSideBar({ isMobile }: { isMobile: boolean }) {
   return (
     <Sidebar className="relative" variant="floating">
       <SidebarHeader>

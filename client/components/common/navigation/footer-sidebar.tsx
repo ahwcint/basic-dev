@@ -9,9 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { LogOutIcon, SettingsIcon, UserCogIcon } from "lucide-react";
+import {
+  LogOutIcon,
+  SettingsIcon,
+  SunMoonIcon,
+  UserCogIcon,
+} from "lucide-react";
 import { useAuth } from "@/lib/context/AuthContext";
 import { useMemo } from "react";
+import { ButtonModeToggle } from "../mode-toggle";
 
 export function FooterSidebar({ isMobile }: { isMobile: boolean }) {
   const { logout } = useAuth();
@@ -42,6 +48,13 @@ export function FooterSidebar({ isMobile }: { isMobile: boolean }) {
             <UserCogIcon /> Account
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuLabel className="text-muted-foreground text-[0.7rem] font-extrabold">
+            System
+          </DropdownMenuLabel>
+          <DropdownMenuItem>
+            <SunMoonIcon />
+            <ButtonModeToggle />
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => logout(true)} variant="destructive">
             <LogOutIcon />
             Logout

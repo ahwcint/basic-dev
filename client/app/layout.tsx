@@ -16,7 +16,7 @@ const notoSansThai = Noto_Sans_Thai({
 });
 
 export const metadata: Metadata = {
-  title: "Free Concert Tickets",
+  title: "Basic-Dev",
 };
 
 export default async function RootLayout({
@@ -26,11 +26,11 @@ export default async function RootLayout({
 }>) {
   const { user, isRefreshTokenExpired, isTokenExpired } = await getSession();
   return (
-    <html lang="en" className={notoSansThai.variable} suppressHydrationWarning>
+    <html lang="en" className={cn(notoSansThai.variable)} suppressHydrationWarning>
       <body className={cn("flex m-auto rounded overflow-clip border")}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
