@@ -9,7 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BaseFormField } from "@/components/common/form/BaseFormField";
 
 const loginSchema = z.object({
@@ -20,7 +20,7 @@ const loginSchema = z.object({
 type loginDto = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const form = useForm({
@@ -36,18 +36,9 @@ export default function LoginPage() {
     setLoading(true);
     login({
       payload: values,
-      onSettled: () => setLoading(false),
-      redirect: true,
+      onSettled: () => router.replace('/home'),
     });
   };
-  useEffect(() => {
-    if (user) router.replace('/home');
-  }, [user, router]);
-
-  useEffect(() => {
-    router.prefetch("/home");
-    router.prefetch("/auth/register");
-  }, [router]);
   return (
     <div className="p-1 h-full flex justify-center items-center">
       <Card className="max-w-md w-full">

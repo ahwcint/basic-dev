@@ -22,7 +22,6 @@ import { toast } from "sonner";
 type AuthFn = (props: {
   payload: { username: string; password: string };
   onSettled?: () => void;
-  redirect?: boolean;
 }) => void;
 
 type AuthContextType = {
@@ -74,6 +73,7 @@ export function AuthProvider({
   const logout = useCallback(
     (redirect: boolean) => {
       logoutService().then((res) => {
+        setUserState(undefined);
         if (res.success && redirect) router.push("/auth/login");
       });
     },

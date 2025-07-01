@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/lib/context/AuthContext";
-import { useEffect } from "react";
 import { BaseFormField } from "@/components/common/form/BaseFormField";
 import { useRouter } from "next/navigation";
 
@@ -21,7 +20,7 @@ type registerDto = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, register } = useAuth();
+  const { register } = useAuth();
   const form = useForm({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -31,16 +30,11 @@ export default function RegisterPage() {
   });
 
   const onSubmit = (values: registerDto) => {
-    register({ payload: values, redirect: true });
+    register({
+      payload: values,
+      onSettled: () => router.replace("/home"),
+    });
   };
-
-  useEffect(() => {
-    if (user) router.replace("/home");
-  }, [user, router]);
-
-  useEffect(() => {
-    router.prefetch("/home");
-  }, [router]);
   return (
     <div className="p-1 h-full flex justify-center items-center">
       <Card className="max-w-md w-full">
