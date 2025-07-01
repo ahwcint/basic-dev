@@ -65,8 +65,8 @@ export function AuthProvider({
         onSuccess: (res) => {
           toast.success(res.message);
           setUserState(res.data);
-          console.log("object");
-          if (res.success && redirect) router.replace(redirectRoute);
+          console.log('res.success :>> ', res.success);
+          if (res.success && redirect) router.push(redirectRoute);
         },
         onSettled,
       });
@@ -87,7 +87,7 @@ export function AuthProvider({
     ({ payload, onSettled, redirect = false }) => {
       registerServiceApi(payload, {
         onSuccess: (res) => {
-          if (res.success && redirect) router.replace(redirectRoute);
+          if (res.success && redirect) router.push(redirectRoute);
           setUserState(res.data);
         },
         onSettled,
