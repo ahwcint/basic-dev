@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { useAuth } from "../context/AuthContext";
-import { UserRole } from "../api/type";
 import { usePathname, useRouter } from "next/navigation";
+import { UserRole } from "@/services/types/user.type";
 
 export function RoleGuard({
   allowedRoles,

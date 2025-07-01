@@ -1,4 +1,4 @@
-import { User } from "../../lib/api/type";
+import { User } from "./user.type";
 
 export type ConcertType = {
   id: string;
