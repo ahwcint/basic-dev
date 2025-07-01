@@ -5,7 +5,7 @@ type RetryAbleAxiosRequestConfig = {
 } & AxiosRequestConfig;
 
 const api = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: "/api",
   withCredentials: true,
   timeout: 10000,
 });
@@ -20,7 +20,6 @@ api.interceptors.response.use(
       const isUnauthorizedWithAccessToken = data?.statusCode === 422;
       const originalRequestConfig: RetryAbleAxiosRequestConfig =
         error.config || {};
-        console.log('originalRequestConfig?._retry :>> ', originalRequestConfig?._retry);
 
       if (isUnauthorized && typeof window !== "undefined") {
         window.location.href = "/auth/login";

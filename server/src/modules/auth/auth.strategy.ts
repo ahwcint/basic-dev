@@ -20,6 +20,6 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: { sub: string; user: unknown }) {
-    return { user: payload.user };
+    return payload.user;
   }
 }

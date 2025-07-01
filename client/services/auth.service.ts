@@ -1,30 +1,34 @@
-import { callApiHandler } from "@/lib/api/callApi";
-import { User, UserRole } from "@/lib/api/type";
+import { callApi } from "@/lib/api/callApi";
+import { User, UserRole } from "@/services/types/user.type";
 
-export const loginService = async (username: string) => {
-  return await callApiHandler("POST", "/auth/login", { body: { username } });
+export const loginService = async (payload: {
+  username: string;
+  password: string;
+}) => {
+  return await callApi<User>("POST", "/auth/login", { body: payload });
+};
+
+export const registerService = async (payload: {
+  username: string;
+  password: string;
+}) => {
+  return await callApi<User>("POST", "/auth/register", { body: payload });
 };
 
 export const logoutService = async () => {
-  return await callApiHandler("GET", "/auth/logout");
-};
-
-export const createUserService = async (username: string) => {
-  return await callApiHandler("POST", "/user", {
-    body: { username },
-  });
+  return await callApi("GET", "/auth/logout");
 };
 
 export const changeRoleUser = async (userId: string, role: UserRole) => {
-  return await callApiHandler<User>("PATCH", "/user/change-role", {
+  return await callApi<User>("PATCH", "/user/change-role", {
     body: { role, userId },
   });
 };
 
 export const listUserService = async () => {
-  return await callApiHandler("GET", "/user");
+  return await callApi<User>("GET", "/user");
 };
 
 export const refreshTokenService = async () => {
-  return await callApiHandler("GET", "/auth/refresh-token");
+  return await callApi("GET", "/auth/refresh-token");
 };

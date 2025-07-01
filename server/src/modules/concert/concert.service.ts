@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateConcertDto, CreateReserveConcertDto } from './concert.schema';
 import { BaseListRequestDto } from 'src/common/schema/type';
-import { ConcertAction } from '@prisma/client';
 
 @Injectable()
 export class ConcertService {
@@ -20,6 +19,34 @@ export class ConcertService {
     return this.prisma.concert.findMany({
       skip: Math.max(page - 1, 0),
       take: pageSize,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      where: {
+        active: true,
+      },
+    });
+  }
+
+  async listWithReservation({
+    page = 0,
+    pageSize,
+    userId,
+  }: BaseListRequestDto & { userId: string }) {
+    return this.prisma.concert.findMany({
+      include: {
+        auditLogConcerts: {
+          where: { userId },
+          select: { id: true, action: true },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+      skip: Math.max(page - 1, 0),
+      take: pageSize,
+      orderBy: {
+        createdAt: 'desc',
+      },
       where: {
         active: true,
       },
@@ -45,32 +72,67 @@ export class ConcertService {
     });
   }
 
-  async reserveConcert({ concertId, userId }: CreateReserveConcertDto) {
+  async createConcertAuditLog({
+    concertId,
+    userId,
+    action,
+  }: CreateReserveConcertDto) {
     return this.prisma.auditLogConcert.create({
       data: {
-        action: ConcertAction.RESERVE,
+        action,
         concertId,
         userId,
       },
     });
   }
 
-  async cancelReserve(id: string) {
-    return this.prisma.auditLogConcert.update({
-      where: {
-        id,
+  async countSeatsInformation() {
+    const total = this.prisma.concert.aggregate({
+      _sum: {
+        totalSeats: true,
       },
-      data: {
-        action: ConcertAction.CANCEL,
+      where: {
+        active: true,
       },
     });
+    const reserve = this.prisma.auditLogConcert.count({
+      where: {
+        action: 'RESERVE',
+      },
+    });
+    const cancel = this.prisma.auditLogConcert.count({
+      where: {
+        action: 'CANCEL',
+      },
+    });
+
+    const result = await Promise.all([total, reserve, cancel]);
+
+    return {
+      totalSeats: result[0]._sum.totalSeats ?? 0,
+      reserve: result[1],
+      cancel: result[2],
+    };
   }
 
-  async countTotalSeatsReserve(id: string) {
-    return this.prisma.auditLogConcert.count({
-      where: {
-        concertId: id,
-        action: 'RESERVE',
+  async auditLog({ page = 0, pageSize }: BaseListRequestDto) {
+    return this.prisma.auditLogConcert.findMany({
+      include: {
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        concert: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      skip: Math.max(page - 1, 0),
+      take: pageSize,
+      orderBy: {
+        createdAt: 'desc',
       },
     });
   }

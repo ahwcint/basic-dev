@@ -1,3 +1,5 @@
+import { User } from '@prisma/client';
+import { Request } from 'express';
 import { z } from 'zod';
 
 export const BaseListRequestSchema = z.object({
@@ -6,3 +8,7 @@ export const BaseListRequestSchema = z.object({
 });
 
 export type BaseListRequestDto = z.infer<typeof BaseListRequestSchema>;
+
+export type BaseRequest = Request & {
+  user: User;
+};

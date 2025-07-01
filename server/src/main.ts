@@ -8,7 +8,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: [
+      'http://localhost:3000',
+      'https://515qk3rs-3000.asse.devtunnels.ms',
+    ],
     methods: ['GET', 'POST', 'PUT', 'PATCH'],
     credentials: true,
   });

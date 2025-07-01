@@ -4,6 +4,7 @@ import {
   loginService,
   logoutService,
   refreshTokenService,
+  registerService,
 } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import {
@@ -14,16 +15,21 @@ import {
   useState,
 } from "react";
 import type { PropsWithChildren } from "react";
-import type { callApiHandler } from "../api/callApi";
-import { User } from "../api/type";
+import { User } from "@/services/types/user.type";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 type AuthContextType = {
   user: User | undefined;
   setUser: (data: User | undefined) => void;
   login: (
-    username: string,
+    payload: { username: string; password: string },
     redirect?: boolean
-  ) => ReturnType<typeof callApiHandler>;
+  ) => void;
+  register: (
+    payload: { username: string; password: string },
+    redirect?: boolean
+  ) => void;
   logout: (redirect: boolean) => void;
 };
 
@@ -40,24 +46,51 @@ export function AuthProvider({
   isTokenExpired: boolean | undefined;
 }) {
   const router = useRouter();
+  const redirectRoute = "/home";
   const [userState, setUserState] = useState<User | undefined>(user);
-  const login = useCallback(
-    async (username: string, redirect = false) => {
-      const res = await loginService(username);
+  const { mutate: registerServiceApi } = useMutation({
+    mutationKey: ["register-user"],
+    mutationFn: registerService,
+    onSuccess: (res) => toast.success(res.message),
+  });
 
-      if (res.success && redirect) router.replace('/');
+  const { mutate: loginServiceApi } = useMutation({
+    mutationKey: ["login-user"],
+    mutationFn: loginService,
+  });
 
-      return res;
+  const login: AuthContextType["login"] = useCallback(
+    async (payload, redirect = false) => {
+      loginServiceApi(payload, {
+        onSuccess: (res) => {
+          toast.success(res.message);
+          setUserState(res.data);
+          if (res.success && redirect) router.replace(redirectRoute);
+        },
+      });
+    },
+    [loginServiceApi, router]
+  );
+
+  const logout = useCallback(
+    (redirect: boolean) => {
+      logoutService().then((res) => {
+        if (res.success && redirect) router.push("/auth/login");
+      });
     },
     [router]
   );
 
-  const logout = useCallback(
-    async (redirect: boolean) => {
-      const res = await logoutService();
-      if (res.success && redirect) router.push('/auth/login');
+  const register: AuthContextType["register"] = useCallback(
+    (payload, redirect = false) => {
+      registerServiceApi(payload, {
+        onSuccess: (res) => {
+          if (res.success && redirect) router.replace(redirectRoute);
+          setUserState(res.data);
+        },
+      });
     },
-    [router]
+    [registerServiceApi, router]
   );
 
   const refreshToken = useCallback(async () => {
@@ -81,7 +114,13 @@ export function AuthProvider({
 
   return (
     <AuthContext.Provider
-      value={{ user: userState, logout, login, setUser: setUserState }}
+      value={{
+        user: userState,
+        logout,
+        login,
+        setUser: setUserState,
+        register,
+      }}
     >
       {children}
     </AuthContext.Provider>

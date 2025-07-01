@@ -2,7 +2,8 @@
 
 import { jwtDecode } from "jwt-decode";
 import { cookies } from "next/headers";
-import { TokenData, User } from "./type";
+import { TokenData } from "./type";
+import { User } from "@/services/types/user.type";
 
 export async function getSession() {
   const awaitedCookies = await cookies();
@@ -25,7 +26,6 @@ export async function getSession() {
     isTokenExpired = true;
     isRefreshTokenExpired = true;
   }
-
   try {
     tokenData = jwtDecode(token);
     user = tokenData.user;

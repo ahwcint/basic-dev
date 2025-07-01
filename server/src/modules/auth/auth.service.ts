@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import type { Response } from 'express';
 import { COOKIE_REFRESH_TOKEN, COOKIE_TOKEN } from './auth.schema';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +13,7 @@ export class AuthService {
   ) {}
 
   async validate(
-    { username }: { username: string },
+    { username, password }: { username: string; password: string },
     /**
      * use res for set cookies
      */
@@ -20,24 +21,35 @@ export class AuthService {
   ) {
     const user = await this.prisma.user.findUnique({
       where: {
-        username: username,
+        username,
       },
     });
+    if (!user) {
+      // decoy for time tracking api
+      await bcrypt.compare(
+        password,
+        '$2b$10$invalidsaltstring1234567890fakelolz',
+      );
+      throw new BadRequestException('username or password invalid');
+    }
 
-    if (!user) throw new BadRequestException('User not found');
+    const { password: hashedPassword, ...safeUser } = user;
+    const isValidPassword = await bcrypt.compare(password, hashedPassword);
+    if (!isValidPassword)
+      throw new BadRequestException('username or password invalid');
 
     const payload = { sub: user.id };
 
     const token = this.jwtService.sign(
-      { ...payload, user },
+      { ...payload, user: safeUser },
       { expiresIn: '15m' },
     );
     const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
-
+    const isProduction = process.env.NODE_ENV === 'production';
     if (res) {
       res.cookie(COOKIE_REFRESH_TOKEN, refresh_token, {
         httpOnly: true,
-        secure: false,
+        secure: isProduction,
         sameSite: 'lax',
         path: '/',
         maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -45,7 +57,7 @@ export class AuthService {
 
       res.cookie(COOKIE_TOKEN, token, {
         httpOnly: true,
-        secure: false,
+        secure: isProduction,
         sameSite: 'lax',
         path: '/',
         maxAge: 1000 * 60 * 15,
@@ -54,6 +66,7 @@ export class AuthService {
     return {
       token,
       refresh_token,
+      user: safeUser,
     };
   }
 

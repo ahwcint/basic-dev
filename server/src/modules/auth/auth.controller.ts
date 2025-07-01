@@ -30,9 +30,9 @@ export class AuthController {
   ) {
     const safePayload = LoginSchema.parse(body);
 
-    await this.authService.validate(safePayload, res);
+    const result = await this.authService.validate(safePayload, res);
 
-    return safePayload;
+    return result.user;
   }
 
   @ResponseMsg('Logged out successfully.')
@@ -42,6 +42,20 @@ export class AuthController {
     res.clearCookie(COOKIE_REFRESH_TOKEN);
     res.clearCookie(COOKIE_TOKEN);
     return {};
+  }
+
+  @ResponseMsg('Create User successfully.')
+  @Public()
+  @Post('register')
+  async register(
+    @Body() body: unknown,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const safePayload = LoginSchema.parse(body);
+    const user = await this.userService.create(safePayload);
+    await this.authService.validate(safePayload, res);
+
+    return user;
   }
 
   @ResponseMsg('Refresh token successfully.')

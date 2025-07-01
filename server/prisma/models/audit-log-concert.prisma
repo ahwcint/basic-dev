@@ -9,6 +9,6 @@ model AuditLogConcert {
     concertId String
     concert   Concert?      @relation(fields: [concertId], references: [id])
     userId    String
-    User      User?         @relation(fields: [userId], references: [id])
+    user      User?         @relation(fields: [userId], references: [id])
     createdAt DateTime      @default(now())
 }

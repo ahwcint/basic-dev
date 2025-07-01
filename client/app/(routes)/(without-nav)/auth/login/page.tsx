@@ -1,27 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/custom-button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createUserService } from "@/services/auth.service";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/context/AuthContext";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { BaseFormField } from "@/components/common/form/BaseFormField";
 
 const loginSchema = z.object({
   username: z.string().min(1).max(20),
+  password: z.string().min(1).max(20),
 });
 
 type loginDto = z.infer<typeof loginSchema>;
@@ -30,27 +23,19 @@ export default function LoginPage() {
   const auth = useAuth();
   const isRun = useRef(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
+      password: "",
     },
+    disabled: loading,
   });
 
   const onSubmit = async (values: loginDto) => {
-    const user = await auth.login(values.username);
-    if (user.success) {
-      toast.success(user.message);
-      router.refresh();
-      return;
-    }
-
-    const newUser = await createUserService(values.username);
-
-    if (newUser.success) {
-      toast.success(newUser.message);
-      router.refresh();
-    }
+    setLoading(true);
+    auth.login(values, true).finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -59,28 +44,48 @@ export default function LoginPage() {
 
     if (auth.user) auth.setUser(undefined);
   }, [auth]);
+
+  useEffect(() => {
+    router.prefetch("/home");
+    router.prefetch("/auth/register");
+  }, [router]);
   return (
-    <div className="p-1 bg-gray-300 h-full flex justify-center items-center">
+    <div className="p-1 h-full flex justify-center items-center">
       <Card className="max-w-md w-full">
         <CardHeader>Login</CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
+              <BaseFormField
+                formControl={form.control}
                 name="username"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input placeholder="USERNAME" {...field} />
-                    </FormControl>
-                    <FormDescription />
-                    <FormMessage />
-                  </FormItem>
+                  <Input {...field} placeholder="USERNAME" autoComplete="off" />
                 )}
               />
+              <BaseFormField
+                formControl={form.control}
+                name="password"
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="PASSWORD"
+                    autoComplete="off"
+                  />
+                )}
+              />
+
               <Button type="submit" className="float-right">
                 Login
+              </Button>
+              <Button
+                type="button"
+                variant={"link"}
+                className="float-right mx-2"
+                onClick={() => router.push("/auth/register")}
+              >
+                create new one
               </Button>
             </form>
           </Form>

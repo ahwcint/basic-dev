@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -39,7 +40,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       switch (exception.code) {
         case 'P2002':
           status = HttpStatus.CONFLICT;
-          message = 'Duplicate field value violates unique constraint';
+          message = 'Username already existed.';
           errors = {
             target: exception.meta?.target,
           };
@@ -59,6 +60,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status = HttpStatus.BAD_REQUEST;
       message = 'Validation failed';
       errors = exception.flatten().fieldErrors;
+    } else if (exception instanceof NotFoundException) {
+      status = HttpStatus.NOT_FOUND;
     } else if (exception instanceof Error) {
       message = exception.message;
     }

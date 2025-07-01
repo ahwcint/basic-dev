@@ -8,6 +8,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
 import { IS_PUBLIC_KEY } from '../../common/decorators/public.decorator';
 import { Request, type Response } from 'express';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -16,7 +17,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
   handleRequest<TUser = any>(
     err: any,
-    user: any,
+    user: User,
     info: any,
     context: ExecutionContext,
   ): TUser {
