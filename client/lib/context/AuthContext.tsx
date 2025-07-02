@@ -69,7 +69,7 @@ export function AuthProvider({
   const logout = useCallback(
     (redirect: boolean) => {
       logoutService().then((res) => {
-        setUserState(undefined);
+        // setUserState(undefined);
         if (res.success && redirect) router.push('/auth/login');
       });
     },
@@ -127,5 +127,5 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must used within AuthProvider');
 
-  return context;
+  return context as AuthContextType & { user: User };
 }

@@ -90,6 +90,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     }
 
+    console.log('exception :>> ', exception);
+
     response.status(400).json({
       success: false,
       statusCode: status,

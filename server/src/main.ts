@@ -3,15 +3,13 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { JwtAuthGuard } from './modules/auth/jwt.guard';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://515qk3rs-3000.asse.devtunnels.ms',
-    ],
+    origin: ['http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'PATCH'],
     credentials: true,
   });

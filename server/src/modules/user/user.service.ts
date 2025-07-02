@@ -23,11 +23,15 @@ export class UserService {
     return this.prisma.user.findMany({
       skip: Math.max(page - 1, 0),
       take: pageSize,
+      omit: { password: true },
     });
   }
 
   async findOne(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      omit: { password: true },
+    });
   }
 
   async changeRoleUser(payload: ChangeRoleUserDto) {
@@ -38,6 +42,7 @@ export class UserService {
       data: {
         role: payload.role,
       },
+      omit: { password: true },
     });
   }
 }
