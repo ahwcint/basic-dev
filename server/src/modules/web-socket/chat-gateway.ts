@@ -11,6 +11,7 @@ import { UseFilters } from '@nestjs/common';
 import { AllWsExceptionsFilter } from './all-exception';
 
 @WebSocketGateway({
+  path: '/socket.io',
   cors: {
     origin: ['http://localhost:3000', 'https://www.aummer.space'],
     credentials: true,
