@@ -4,9 +4,14 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
+const BACKEND_API =
+  process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_BACKEND_API_PRODUCTION
+    : process.env.NEXT_PUBLIC_BACKEND_API;
+
 export function getSocket({ userId }: { userId: string }) {
   if (!socket || !socket.connected) {
-    socket = io(process.env.NEXT_PUBLIC_BACKEND_API, {
+    socket = io(BACKEND_API, {
       path: '/socket.io',
       transports: ['websocket'],
       withCredentials: true,

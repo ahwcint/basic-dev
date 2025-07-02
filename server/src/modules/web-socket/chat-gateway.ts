@@ -12,7 +12,7 @@ import { AllWsExceptionsFilter } from './all-exception';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'https://www.aummer.space'],
     credentials: true,
   },
 })
