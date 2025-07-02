@@ -6,8 +6,8 @@ let socket: Socket | null = null;
 
 export function getSocket({ userId }: { userId: string }) {
   if (!socket || !socket.connected) {
-    socket = io('http://www.aummer.space', {
-      path: '/api/socket.io/socket.io',
+    socket = io(process.env.NEXT_PUBLIC_BACKEND_API, {
+      path: '/socket.io',
       transports: ['websocket'],
       withCredentials: true,
       query: { userId },
