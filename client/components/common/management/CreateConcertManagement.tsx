@@ -1,17 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { BaseFormField } from "../form/BaseFormField";
-import { Textarea } from "@/components/ui/textarea";
-import { SaveIcon, UserIcon } from "lucide-react";
-import { Button } from "@/components/ui/custom-button";
-import { inputGuardNumber } from "@/lib/utils";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { useCreateConcert } from "@/lib/hooks/concert/useCreateConcert";
-import { useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { BaseFormField } from '../form/BaseFormField';
+import { Textarea } from '@/components/ui/textarea';
+import { SaveIcon, UserIcon } from 'lucide-react';
+import { Button } from '@/components/ui/custom-button';
+import { inputGuardNumber } from '@/lib/utils';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import { useCreateConcert } from '@/lib/hooks/concert/useCreateConcert';
+import { useQueryClient } from '@tanstack/react-query';
 
 const formValidation = z.object({
   name: z.string().min(1),
@@ -25,7 +25,7 @@ export function CreateConcertManagement() {
   const queryClient = useQueryClient();
   const { mutate, isPending } = useCreateConcert({
     onSuccess: (res) => {
-      queryClient.invalidateQueries({ queryKey: ["list-concert"] });
+      queryClient.invalidateQueries({ queryKey: ['list-concert'] });
       toast.success(res.message);
       form.reset();
     },
@@ -33,9 +33,9 @@ export function CreateConcertManagement() {
 
   const form = useForm({
     defaultValues: {
-      name: "",
+      name: '',
       totalSeats: 0,
-      description: "",
+      description: '',
     },
     resolver: zodResolver(formValidation),
     disabled: isPending,

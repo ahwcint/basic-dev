@@ -1,15 +1,12 @@
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { ReactNode } from "react";
+import { Card, CardContent } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+import { ReactNode } from 'react';
 
 const CardColors = {
-  blue: "bg-custom-blue text-white",
-  red: "bg-custom-red text-white",
-  green: "bg-custom-green text-white",
-  default: "",
+  blue: 'bg-custom-blue text-white',
+  red: 'bg-custom-red text-white',
+  green: 'bg-custom-green text-white',
+  default: '',
 };
 
 type CardColorsKey = keyof typeof CardColors;
@@ -23,21 +20,21 @@ type CardBannerProp = {
 };
 
 export function CardBanner({
-  value = "-",
-  headerIcon = "",
-  label = "",
-  className = "",
-  color = "default",
+  value = '-',
+  headerIcon = '',
+  label = '',
+  className = '',
+  color = 'default',
 }: Partial<CardBannerProp>) {
   return (
     <Card
       className={cn(
-        "shadow-none",
-        "max-w-[350px] max-h-[234px] min-w-[150px]",
-        "gap-2",
-        "*:whitespace-nowrap *:text-center",
+        'shadow-none',
+        'max-w-[350px] max-h-[234px] min-w-[150px]',
+        'gap-2',
+        '*:whitespace-nowrap *:text-center',
         CardColors[color],
-        className
+        className,
       )}
     >
       <CardContent>

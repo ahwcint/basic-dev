@@ -5,18 +5,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { ReactNode } from "react";
-import type {
-  Control,
-  ControllerRenderProps,
-  FieldValues,
-  Path,
-} from "react-hook-form";
+} from '@/components/ui/form';
+import { ReactNode } from 'react';
+import type { Control, ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
 
 export function BaseFormField<F extends FieldValues = object>({
   formControl,
-  label = "",
+  label = '',
   name,
   render = () => null,
   className,
@@ -27,7 +22,7 @@ export function BaseFormField<F extends FieldValues = object>({
   name: Path<F>;
   render: (prop: { field: ControllerRenderProps<F, Path<F>> }) => ReactNode;
 }) {
-  if (!formControl) throw new Error("formControl missing.");
+  if (!formControl) throw new Error('formControl missing.');
   return (
     <FormField
       control={formControl}

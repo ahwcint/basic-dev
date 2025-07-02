@@ -1,23 +1,17 @@
-"use client";
+'use client';
 
 import {
   loginService,
   logoutService,
   refreshTokenService,
   registerService,
-} from "@/services/auth.service";
-import { useRouter } from "next/navigation";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import type { PropsWithChildren } from "react";
-import { User } from "@/services/types/user.type";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+} from '@/services/auth.service';
+import { useRouter } from 'next/navigation';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { User } from '@/services/types/user.type';
+import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 type AuthFn = (props: {
   payload: { username: string; password: string };
@@ -48,17 +42,17 @@ export function AuthProvider({
   const router = useRouter();
   const [userState, setUserState] = useState<User | undefined>(user);
   const { mutate: registerServiceApi } = useMutation({
-    mutationKey: ["register-user"],
+    mutationKey: ['register-user'],
     mutationFn: registerService,
     onSuccess: (res) => toast.success(res.message),
   });
 
   const { mutate: loginServiceApi } = useMutation({
-    mutationKey: ["login-user"],
+    mutationKey: ['login-user'],
     mutationFn: loginService,
   });
 
-  const login: AuthContextType["login"] = useCallback(
+  const login: AuthContextType['login'] = useCallback(
     ({ payload, onSettled, onSuccess }) => {
       loginServiceApi(payload, {
         onSuccess: (res) => {
@@ -69,20 +63,20 @@ export function AuthProvider({
         onSettled,
       });
     },
-    [loginServiceApi]
+    [loginServiceApi],
   );
 
   const logout = useCallback(
     (redirect: boolean) => {
       logoutService().then((res) => {
         setUserState(undefined);
-        if (res.success && redirect) router.push("/auth/login");
+        if (res.success && redirect) router.push('/auth/login');
       });
     },
-    [router]
+    [router],
   );
 
-  const register: AuthContextType["register"] = useCallback(
+  const register: AuthContextType['register'] = useCallback(
     ({ payload, onSettled, onSuccess }) => {
       registerServiceApi(payload, {
         onSuccess: (res) => {
@@ -92,7 +86,7 @@ export function AuthProvider({
         onSettled,
       });
     },
-    [registerServiceApi]
+    [registerServiceApi],
   );
 
   const refreshToken = useCallback(async () => {
@@ -131,7 +125,7 @@ export function AuthProvider({
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must used within AuthProvider");
+  if (!context) throw new Error('useAuth must used within AuthProvider');
 
   return context;
 }

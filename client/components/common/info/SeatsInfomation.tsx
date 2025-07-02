@@ -1,14 +1,14 @@
-import { AwardIcon, CircleXIcon, UserIcon } from "lucide-react";
-import { CardBanner } from "@/components/common/cards/CardBanner";
-import { UserRole } from "@/services/types/user.type";
-import { RoleGuard } from "@/lib/guard/RoleGuard";
-import { getInformationSeatsService } from "@/services/concert.service";
-import { useQuery } from "@tanstack/react-query";
-import { useFallback } from "@/lib/hooks/useFallback";
+import { AwardIcon, CircleXIcon, UserIcon } from 'lucide-react';
+import { CardBanner } from '@/components/common/cards/CardBanner';
+import { UserRole } from '@/services/types/user.type';
+import { RoleGuard } from '@/lib/guard/RoleGuard';
+import { getInformationSeatsService } from '@/services/concert.service';
+import { useQuery } from '@tanstack/react-query';
+import { useFallback } from '@/lib/hooks/useFallback';
 
 function SeatsInformation() {
   const { data, isError, isLoading, error } = useQuery({
-    queryKey: ["seats-information"],
+    queryKey: ['seats-information'],
     queryFn: getInformationSeatsService,
     select: (res) => res.data,
     placeholderData: (data) => data,
@@ -23,7 +23,7 @@ function SeatsInformation() {
     <ul className="flex gap-5 *:grow">
       <li>
         <CardBanner
-          headerIcon={<UserIcon className="inline" size={"2rem"} />}
+          headerIcon={<UserIcon className="inline" size={'2rem'} />}
           label="Total of seats"
           value={data.totalSeats}
           color="blue"
@@ -31,7 +31,7 @@ function SeatsInformation() {
       </li>
       <li>
         <CardBanner
-          headerIcon={<AwardIcon className="inline" size={"2rem"} />}
+          headerIcon={<AwardIcon className="inline" size={'2rem'} />}
           label="Reserve"
           value={data.reserve}
           color="green"
@@ -39,7 +39,7 @@ function SeatsInformation() {
       </li>
       <li>
         <CardBanner
-          headerIcon={<CircleXIcon className="inline" size={"2rem"} />}
+          headerIcon={<CircleXIcon className="inline" size={'2rem'} />}
           label="Cancel"
           value={data.cancel}
           color="red"

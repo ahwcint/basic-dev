@@ -1,4 +1,4 @@
-import { User } from "@/services/types/user.type";
+import { User } from '@/services/types/user.type';
 
 export type TokenData = {
   user: User;

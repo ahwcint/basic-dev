@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { UserRole } from "@/services/types/user.type";
-import { usePathname } from "next/navigation";
-import type { PropsWithChildren, ReactNode } from "react";
-import { Button } from "../../ui/custom-button";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import { UserRole } from '@/services/types/user.type';
+import { usePathname } from 'next/navigation';
+import type { PropsWithChildren, ReactNode } from 'react';
+import { Button } from '../../ui/custom-button';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 type NavigationListProp = {
   data: {
@@ -37,7 +37,7 @@ export function NavigationList({ data = [], currentRole = UserRole.USER }: Navig
               {i.label}
             </ButtonCustom>
           </li>
-        ) : null
+        ) : null,
       )}
     </ul>
   );
@@ -46,23 +46,20 @@ export function NavigationList({ data = [], currentRole = UserRole.USER }: Navig
 const ButtonCustom = ({
   children,
   active = false,
-  href = "",
+  href = '',
   icon,
   onClick,
 }: PropsWithChildren & {
   active?: boolean;
   href?: string;
   onClick?: () => void;
-    icon?: ReactNode;
+  icon?: ReactNode;
 }) => (
   <Button
     asChild
     onClick={onClick}
-    variant={"ghost"}
-    className={cn(
-      "w-full flex justify-start py-[1.3rem]",
-      active && "!bg-blue-100"
-    )}
+    variant={'ghost'}
+    className={cn('w-full flex justify-start py-[1.3rem]', active && '!bg-blue-100')}
     startIcon={icon}
   >
     <Link href={href} className="w-full">

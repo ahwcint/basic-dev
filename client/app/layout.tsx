@@ -1,22 +1,22 @@
-import type { Metadata } from "next";
-import { Noto_Sans_Thai } from "next/font/google";
-import "./globals.css";
-import { AuthProvider } from "@/lib/context/AuthContext";
-import { getSession } from "@/lib/api/getSession";
-import { cn } from "@/lib/utils";
-import { MainQueryClientProvider } from "@/components/common/root/MainQueryClientProvider";
-import { Toaster } from "sonner";
-import { ThemeProvider } from "@/lib/providers/theme-provider";
+import type { Metadata } from 'next';
+import { Noto_Sans_Thai } from 'next/font/google';
+import './globals.css';
+import { AuthProvider } from '@/lib/context/AuthContext';
+import { getSession } from '@/lib/api/getSession';
+import { cn } from '@/lib/utils';
+import { MainQueryClientProvider } from '@/components/common/root/MainQueryClientProvider';
+import { Toaster } from 'sonner';
+import { ThemeProvider } from '@/lib/providers/theme-provider';
 
 const notoSansThai = Noto_Sans_Thai({
-  variable: "--font-noto-sans",
-  subsets: ["thai"],
-  weight: ["400", "500", "700"],
-  display: "swap",
+  variable: '--font-noto-sans',
+  subsets: ['thai'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "Basic-Dev",
+  title: 'Basic-Dev',
 };
 
 export default async function RootLayout({
@@ -27,13 +27,8 @@ export default async function RootLayout({
   const { user, isRefreshTokenExpired, isTokenExpired } = await getSession();
   return (
     <html lang="en" className={cn(notoSansThai.variable)} suppressHydrationWarning>
-      <body className={cn("flex m-auto rounded overflow-clip border")}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body className={cn('flex m-auto rounded overflow-clip border')}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MainQueryClientProvider>
             <AuthProvider
               user={user || undefined}

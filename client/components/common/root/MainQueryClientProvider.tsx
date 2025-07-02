@@ -1,15 +1,10 @@
-"use client";
+'use client';
 
-import { BadResponse } from "@/lib/api/type";
-import {
-  MutationCache,
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import type { PropsWithChildren } from "react";
-import { toast } from "sonner";
+import { BadResponse } from '@/lib/api/type';
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import type { PropsWithChildren } from 'react';
+import { toast } from 'sonner';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,11 +14,11 @@ const queryClient = new QueryClient({
     },
     mutations: {
       gcTime: 1000 * 60 * 5,
-    }
+    },
   },
   mutationCache: new MutationCache({
     onMutate: (variables) => {
-      console.log("[✨Mutating✨]: ", variables);
+      console.log('[✨Mutating✨]: ', variables);
     },
     onError: (error: Error | BadResponse) => {
       if (error instanceof BadResponse) {

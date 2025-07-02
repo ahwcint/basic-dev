@@ -1,4 +1,4 @@
-import { User } from "./user.type";
+import { User } from './user.type';
 
 export type ConcertType = {
   id: string;
@@ -11,16 +11,16 @@ export type ConcertType = {
 };
 
 export enum ConcertAuditLogAction {
-  RESERVE = "RESERVE",
-  CANCEL = "CANCEL",
+  RESERVE = 'RESERVE',
+  CANCEL = 'CANCEL',
 }
 
 export type ConcertAuditLog = {
   id: string;
   action: ConcertAuditLogAction;
   concertId: string;
-  concert: Pick<ConcertType, "name">;
-  user: Pick<User, "username">;
+  concert: Pick<ConcertType, 'name'>;
+  user: Pick<User, 'username'>;
   userId: string;
   createdAt: string;
 };

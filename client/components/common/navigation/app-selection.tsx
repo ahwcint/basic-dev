@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,19 +6,19 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { ChevronsUpDownIcon } from "lucide-react";
-import { useMemo } from "react";
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { ChevronsUpDownIcon } from 'lucide-react';
+import { useMemo } from 'react';
 
 export function AppSelection({ isMobile }: { isMobile: boolean }) {
   const side = useMemo(() => {
-    return isMobile ? undefined : "right";
+    return isMobile ? undefined : 'right';
   }, [isMobile]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="font-mono h-12">
-        <SidebarMenuButton isActive size={"lg"}>
+        <SidebarMenuButton isActive size={'lg'}>
           <Avatar className="rounded-sm">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>

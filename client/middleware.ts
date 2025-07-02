@@ -1,20 +1,20 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 export default function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
-  const refreshToken = req.cookies.get("refresh_token");
+  const refreshToken = req.cookies.get('refresh_token');
 
   const isRefreshToken = !!refreshToken;
-  const isAuthPage = req.nextUrl.pathname.startsWith("/auth");
+  const isAuthPage = req.nextUrl.pathname.startsWith('/auth');
 
   if (!isRefreshToken && !isAuthPage) {
-    url.pathname = "/auth/login";
+    url.pathname = '/auth/login';
     return NextResponse.redirect(url);
   }
 
   if (isRefreshToken && isAuthPage) {
-    url.pathname = "/home";
+    url.pathname = '/home';
     return NextResponse.redirect(url);
   }
 
@@ -22,5 +22,5 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api).*)'],
 };

@@ -1,11 +1,7 @@
-import { callApi } from "@/lib/api/callApi";
-import {
-  ConcertAuditLog,
-  ConcertType,
-  SeatsInformation,
-} from "@/services/types/concert.type";
+import { callApi } from '@/lib/api/callApi';
+import { ConcertAuditLog, ConcertType, SeatsInformation } from '@/services/types/concert.type';
 
-const MODULE_NAME = "concert";
+const MODULE_NAME = 'concert';
 
 export const listConcertService = async ({
   page = 1,
@@ -14,7 +10,7 @@ export const listConcertService = async ({
   page: number;
   pageSize: number;
 }) => {
-  return await callApi<ConcertType[]>("GET", `/${MODULE_NAME}`, {
+  return await callApi<ConcertType[]>('GET', `/${MODULE_NAME}`, {
     params: {
       page,
       pageSize,
@@ -22,38 +18,32 @@ export const listConcertService = async ({
   });
 };
 
-type CreateConcertDto = Pick<
-  ConcertType,
-  "totalSeats" | "description" | "name"
->;
+type CreateConcertDto = Pick<ConcertType, 'totalSeats' | 'description' | 'name'>;
 
 export const createConcertService = async (data: CreateConcertDto) => {
-  return await callApi<ConcertType>("POST", `/${MODULE_NAME}`, { body: data });
+  return await callApi<ConcertType>('POST', `/${MODULE_NAME}`, { body: data });
 };
 
 export const softDeleteConcertService = async (concertId: string) => {
-  return await callApi<ConcertType>("PATCH", `/${MODULE_NAME}/${concertId}`);
+  return await callApi<ConcertType>('PATCH', `/${MODULE_NAME}/${concertId}`);
 };
 
 export const reserveConcertService = async (concertId: string) => {
-  return await callApi<ConcertAuditLog>("POST", `/${MODULE_NAME}/reserve`, {
+  return await callApi<ConcertAuditLog>('POST', `/${MODULE_NAME}/reserve`, {
     body: { concertId },
   });
 };
 
 export const cancelReserveConcertService = async (concertId: string) => {
-  return await callApi<ConcertAuditLog>("POST", `/${MODULE_NAME}/cancel`, {
+  return await callApi<ConcertAuditLog>('POST', `/${MODULE_NAME}/cancel`, {
     body: { concertId },
   });
 };
 
 export const getInformationSeatsService = async () => {
-  return await callApi<SeatsInformation>(
-    "GET",
-    `/${MODULE_NAME}/seats/information`
-  );
+  return await callApi<SeatsInformation>('GET', `/${MODULE_NAME}/seats/information`);
 };
 
 export const listHistoryConcertReservation = async () => {
-  return await callApi<ConcertAuditLog[]>("GET", `/${MODULE_NAME}/seats/audit-log`);
+  return await callApi<ConcertAuditLog[]>('GET', `/${MODULE_NAME}/seats/audit-log`);
 };

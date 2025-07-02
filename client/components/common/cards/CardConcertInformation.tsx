@@ -1,15 +1,9 @@
-import { Button } from "@/components/ui/custom-button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ConcertAuditLogAction, ConcertType } from "@/services/types/concert.type";
-import { TrashIcon, UserIcon } from "lucide-react";
-import { useState } from "react";
+import { Button } from '@/components/ui/custom-button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { ConcertAuditLogAction, ConcertType } from '@/services/types/concert.type';
+import { TrashIcon, UserIcon } from 'lucide-react';
+import { useState } from 'react';
 
 type CardConcertInformationProp = {
   data: ConcertType | undefined;
@@ -37,8 +31,8 @@ export function CardConcertInformation({
       <Separator className="my-0" />
       <CardContent className="px-0">{data.description}</CardContent>
       <CardFooter className="justify-between px-0">
-        <Button variant={"ghost"} startIcon={<UserIcon />} className="px-2">
-          {data.totalSeats ?? "-"}
+        <Button variant={'ghost'} startIcon={<UserIcon />} className="px-2">
+          {data.totalSeats ?? '-'}
         </Button>
 
         {isViewMode && (
@@ -52,7 +46,7 @@ export function CardConcertInformation({
 
         {!isViewMode && (
           <Button
-            variant={"destructive"}
+            variant={'destructive'}
             startIcon={<TrashIcon />}
             onClick={() => onDelete?.(data.id)}
           >
@@ -72,7 +66,7 @@ const ButtonViewMode = ({
 }: {
   concertId: string;
   isReserved: boolean;
-} & Pick<CardConcertInformationProp, "onReserve" | "onCancel">) => {
+} & Pick<CardConcertInformationProp, 'onReserve' | 'onCancel'>) => {
   const [loading, setLoading] = useState(false); // instance update
 
   const handleClick = (fn?: Promise<unknown>) => {
@@ -83,7 +77,7 @@ const ButtonViewMode = ({
   if (isReserved)
     return (
       <Button
-        variant={"destructive"}
+        variant={'destructive'}
         onClick={() => {
           handleClick(onCancel?.(concertId));
         }}
@@ -94,7 +88,7 @@ const ButtonViewMode = ({
     );
   return (
     <Button
-      variant={"action"}
+      variant={'action'}
       onClick={() => {
         handleClick(onReserve?.(concertId));
       }}

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   Sidebar,
@@ -14,11 +14,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { PropsWithChildren } from "react";
-import { AppSelection } from "./app-selection";
-import { FooterSidebar } from "./footer-sidebar";
-import { SettingsIcon } from "lucide-react";
+} from '@/components/ui/sidebar';
+import { PropsWithChildren } from 'react';
+import { AppSelection } from './app-selection';
+import { FooterSidebar } from './footer-sidebar';
+import { SettingsIcon } from 'lucide-react';
 
 export function MainSideBarWrapper({ children }: PropsWithChildren) {
   return (
@@ -34,9 +34,7 @@ function MainSideBar({ children }: PropsWithChildren) {
     <>
       <AppSideBar isMobile={isMobile} />
       {children}
-      {isMobile && (
-        <SidebarTrigger className="mt-2 absolute top-0 right-2" size="lg" />
-      )}
+      {isMobile && <SidebarTrigger className="mt-2 absolute top-0 right-2" size="lg" />}
     </>
   );
 }

@@ -1,15 +1,10 @@
-import api from "./axios";
-import {
-  BadResponse,
-  CallApiError,
-  CallApiResponse,
-  GoodResponse,
-} from "./type";
+import api from './axios';
+import { BadResponse, CallApiError, CallApiResponse, GoodResponse } from './type';
 
 type CallApiHandlerType = [
-  method: "GET" | "POST" | "PATCH" | "PUT",
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT',
   url: string,
-  payload?: Payload
+  payload?: Payload,
 ];
 
 type Payload = {
@@ -21,9 +16,9 @@ type Payload = {
  * rough call api used for action need to catch error
  */
 export async function callApi<T = unknown>(
-  method: "GET" | "POST" | "PATCH" | "PUT",
+  method: 'GET' | 'POST' | 'PATCH' | 'PUT',
   url: string,
-  payload: Payload = {}
+  payload: Payload = {},
 ): Promise<CallApiResponse<T>> {
   try {
     const response = await api.request<T, CallApiResponse<T>>({
@@ -41,9 +36,7 @@ export async function callApi<T = unknown>(
 /**
  * this prevent error to wonderful response
  */
-export async function callApiHandler<T = unknown>(
-  ...props: CallApiHandlerType
-) {
+export async function callApiHandler<T = unknown>(...props: CallApiHandlerType) {
   try {
     const res = await callApi<T>(...props);
     return res;

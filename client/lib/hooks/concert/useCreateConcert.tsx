@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createConcertService } from "@/services/concert.service";
-import { useMutation } from "@tanstack/react-query";
+import { createConcertService } from '@/services/concert.service';
+import { useMutation } from '@tanstack/react-query';
 
 export function useCreateConcert({
   onSuccess,
@@ -9,7 +9,7 @@ export function useCreateConcert({
   onSuccess: (data: Awaited<ReturnType<typeof createConcertService>>) => void;
 }) {
   const mutation = useMutation({
-    mutationKey: ["create-concert"],
+    mutationKey: ['create-concert'],
     mutationFn: createConcertService,
     onSuccess,
   });

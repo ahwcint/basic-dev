@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/custom-button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/context/AuthContext";
-import { useState } from "react";
-import { BaseFormField } from "@/components/common/form/BaseFormField";
+import { Button } from '@/components/ui/custom-button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Form } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/context/AuthContext';
+import { useState } from 'react';
+import { BaseFormField } from '@/components/common/form/BaseFormField';
 
 const loginSchema = z.object({
   username: z.string().min(1).max(20),
@@ -26,8 +26,8 @@ export default function LoginPage() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     },
     disabled: loading,
   });
@@ -38,7 +38,7 @@ export default function LoginPage() {
       payload: values,
       onSuccess: () =>
         setTimeout(() => {
-          router.replace("/home");
+          router.replace('/home');
         }, 300),
       onSettled: () => setLoading(false),
     });
@@ -61,12 +61,7 @@ export default function LoginPage() {
                 formControl={form.control}
                 name="password"
                 render={({ field }) => (
-                  <Input
-                    {...field}
-                    type="password"
-                    placeholder="PASSWORD"
-                    autoComplete="off"
-                  />
+                  <Input {...field} type="password" placeholder="PASSWORD" autoComplete="off" />
                 )}
               />
               <Button type="submit" className="float-right">
@@ -74,9 +69,9 @@ export default function LoginPage() {
               </Button>
               <Button
                 type="button"
-                variant={"link"}
+                variant={'link'}
                 className="float-right mx-2"
-                onClick={() => router.push("/auth/register")}
+                onClick={() => router.push('/auth/register')}
               >
                 create new one
               </Button>

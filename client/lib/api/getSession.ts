@@ -1,14 +1,14 @@
-"use server";
+'use server';
 
-import { jwtDecode } from "jwt-decode";
-import { cookies } from "next/headers";
-import { TokenData } from "./type";
-import { User } from "@/services/types/user.type";
+import { jwtDecode } from 'jwt-decode';
+import { cookies } from 'next/headers';
+import { TokenData } from './type';
+import { User } from '@/services/types/user.type';
 
 export async function getSession() {
   const awaitedCookies = await cookies();
-  const refreshToken = awaitedCookies.get("refresh_token")?.value || "";
-  const token = awaitedCookies.get("token")?.value || "";
+  const refreshToken = awaitedCookies.get('refresh_token')?.value || '';
+  const token = awaitedCookies.get('token')?.value || '';
   let isRefreshTokenExpired = false;
   let isTokenExpired = false;
   if (!refreshToken) return {};
@@ -19,8 +19,7 @@ export async function getSession() {
 
   try {
     refreshTokenData = jwtDecode(refreshToken);
-    isRefreshTokenExpired =
-      !refreshToken || verifyExpiration(refreshTokenData.exp);
+    isRefreshTokenExpired = !refreshToken || verifyExpiration(refreshTokenData.exp);
   } catch {
     user = null;
     isTokenExpired = true;

@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,27 +7,22 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarMenuButton } from "@/components/ui/sidebar";
-import {
-  LogOutIcon,
-  SettingsIcon,
-  SunMoonIcon,
-  UserCogIcon,
-} from "lucide-react";
-import { useAuth } from "@/lib/context/AuthContext";
-import { useMemo } from "react";
-import { ButtonModeToggle } from "../mode-toggle";
+} from '@/components/ui/dropdown-menu';
+import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { LogOutIcon, SettingsIcon, SunMoonIcon, UserCogIcon } from 'lucide-react';
+import { useAuth } from '@/lib/context/AuthContext';
+import { useMemo } from 'react';
+import { ButtonModeToggle } from '../mode-toggle';
 
 export function FooterSidebar({ isMobile }: { isMobile: boolean }) {
   const { logout } = useAuth();
   const side = useMemo(() => {
-    return isMobile ? undefined : "right";
+    return isMobile ? undefined : 'right';
   }, [isMobile]);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="font-mono h-12">
-        <SidebarMenuButton isActive size={"lg"}>
+        <SidebarMenuButton isActive size={'lg'}>
           <Avatar className="rounded-sm">
             <AvatarImage src="https://github.com/shadcn.png" />
             <AvatarFallback>CN</AvatarFallback>
@@ -35,11 +30,7 @@ export function FooterSidebar({ isMobile }: { isMobile: boolean }) {
           <SettingsIcon className="ml-auto" />
         </SidebarMenuButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="w-[var(--radix-popper-anchor-width)]"
-        side={side}
-        align="end"
-      >
+      <DropdownMenuContent className="w-[var(--radix-popper-anchor-width)]" side={side} align="end">
         <DropdownMenuLabel className="text-muted-foreground text-[0.7rem] font-extrabold">
           Settings
         </DropdownMenuLabel>

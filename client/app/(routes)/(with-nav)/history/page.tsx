@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Table,
   TableBody,
@@ -8,17 +8,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { RoleGuard } from "@/lib/guard/RoleGuard";
-import { useFallback } from "@/lib/hooks/useFallback";
-import { listHistoryConcertReservation } from "@/services/concert.service";
-import { UserRole } from "@/services/types/user.type";
-import { useQuery } from "@tanstack/react-query";
+} from '@/components/ui/table';
+import { RoleGuard } from '@/lib/guard/RoleGuard';
+import { useFallback } from '@/lib/hooks/useFallback';
+import { listHistoryConcertReservation } from '@/services/concert.service';
+import { UserRole } from '@/services/types/user.type';
+import { useQuery } from '@tanstack/react-query';
 
 export default function HistoryPageWrapper() {
   return (
     <>
-      <RoleGuard allowedRoles={[UserRole.ADMIN]} redirectTo={"home"}>
+      <RoleGuard allowedRoles={[UserRole.ADMIN]} redirectTo={'home'}>
         <HistoryPage />
       </RoleGuard>
     </>
@@ -27,7 +27,7 @@ export default function HistoryPageWrapper() {
 
 function HistoryPage() {
   const { data, error, isError, isLoading } = useQuery({
-    queryKey: ["list-audit-log-concert"],
+    queryKey: ['list-audit-log-concert'],
     queryFn: listHistoryConcertReservation,
   });
 
@@ -36,7 +36,7 @@ function HistoryPage() {
     error,
     isError,
     isLoading,
-    variant: "single",
+    variant: 'single',
   });
   if (isFallback) return fallback;
 

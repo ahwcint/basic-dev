@@ -1,11 +1,11 @@
-import axios, { type AxiosRequestConfig } from "axios";
+import axios, { type AxiosRequestConfig } from 'axios';
 
 type RetryAbleAxiosRequestConfig = {
   _retry?: boolean;
 } & AxiosRequestConfig;
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: '/api',
   withCredentials: true,
   timeout: 10000,
 });
@@ -18,11 +18,10 @@ api.interceptors.response.use(
       const data = error.response?.data;
       const isUnauthorized = data?.statusCode === 401;
       const isUnauthorizedWithAccessToken = data?.statusCode === 422;
-      const originalRequestConfig: RetryAbleAxiosRequestConfig =
-        error.config || {};
+      const originalRequestConfig: RetryAbleAxiosRequestConfig = error.config || {};
 
-      if (isUnauthorized && typeof window !== "undefined") {
-        window.location.href = "/auth/login";
+      if (isUnauthorized && typeof window !== 'undefined') {
+        window.location.href = '/auth/login';
         return new Promise(() => {});
       }
 
@@ -30,9 +29,9 @@ api.interceptors.response.use(
       if (
         isUnauthorizedWithAccessToken &&
         !originalRequestConfig?._retry &&
-        typeof window !== "undefined"
+        typeof window !== 'undefined'
       ) {
-        console.warn("Unauthorized. Retrying request one time.");
+        console.warn('Unauthorized. Retrying request one time.');
         try {
           originalRequestConfig._retry = true;
           return await api(originalRequestConfig);
@@ -43,12 +42,12 @@ api.interceptors.response.use(
       }
 
       console.warn(`[${status || error.code}]`, data || error.message);
-      return Promise.reject(data ?? { message: "Unknown Axios error" });
+      return Promise.reject(data ?? { message: 'Unknown Axios error' });
     }
 
-    console.warn("Unexpected Error:", error);
-    return Promise.reject({ message: "Unexpected error occurred" });
-  }
+    console.warn('Unexpected Error:', error);
+    return Promise.reject({ message: 'Unexpected error occurred' });
+  },
 );
 
 export default api;
