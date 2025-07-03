@@ -127,12 +127,12 @@
 
   html,
   body {
-    @apply p-0 m-0 h-full max-h-dvh;
+    @apply p-0 m-0 h-full max-h-svh;
     @apply bg-background text-foreground;
     @apply antialiased;
   }
   body {
-    @apply min-h-screen leading-normal font-sans;
+    @apply leading-normal font-sans;
   }
 
   a {

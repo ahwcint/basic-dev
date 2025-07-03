@@ -36,10 +36,7 @@ export default function RegisterPage() {
     setLoading(true);
     register({
       payload: values,
-      onSuccess: () =>
-        setTimeout(() => {
-          router.replace('/home');
-        }, 300),
+      onSuccess: () => router.refresh(),
       onSettled: () => setLoading(false),
     });
   };

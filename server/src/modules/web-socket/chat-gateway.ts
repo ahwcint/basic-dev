@@ -7,20 +7,16 @@ import {
 } from '@nestjs/websockets';
 import type { Server } from 'socket.io';
 import { BaseSocket } from './type';
-import { UseFilters } from '@nestjs/common';
-import { AllWsExceptionsFilter } from './all-exception';
+// import { UseFilters } from '@nestjs/common';
+// import { AllWsExceptionsFilter } from './all-exception';
 
 @WebSocketGateway({
   cors: {
-    origin: [
-      'http://localhost:3000',
-      'https://www.aummer.space',
-      'https://api.aummer.space',
-    ],
+    origin: ['http://localhost:3000', 'https://www.aummer.space'],
     credentials: true,
   },
 })
-@UseFilters(new AllWsExceptionsFilter())
+// @UseFilters(new AllWsExceptionsFilter())
 export class ChatGateway {
   @WebSocketServer()
   server: Server;
