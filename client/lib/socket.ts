@@ -6,7 +6,7 @@ let socket: Socket | null = null;
 
 export function getSocket({ userId }: { userId: string }) {
   if (!socket || !socket.connected) {
-    socket = io('http://www.aummer.space', {
+    socket = io({
       path: '/api/socket.io',
       transports: ['websocket'],
       withCredentials: true,

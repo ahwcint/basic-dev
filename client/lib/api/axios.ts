@@ -5,7 +5,7 @@ type RetryAbleAxiosRequestConfig = {
 } & AxiosRequestConfig;
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.NEXT_PUBLIC_BACKEND_API,
   withCredentials: true,
   timeout: 10000,
 });

@@ -53,7 +53,6 @@ export class AuthService {
       { expiresIn: '15m' },
     );
     const refresh_token = this.jwtService.sign(payload, { expiresIn: '7d' });
-    const isProduction = process.env.NODE_ENV === 'production';
 
     /**
      * 4. set cookie via response
@@ -61,16 +60,16 @@ export class AuthService {
     if (res) {
       res.cookie(COOKIE_REFRESH_TOKEN, refresh_token, {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
+        secure: true,
+        sameSite: 'none',
         path: '/',
         maxAge: 1000 * 60 * 60 * 24 * 7,
       });
 
       res.cookie(COOKIE_TOKEN, token, {
         httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
+        secure: true,
+        sameSite: 'none',
         path: '/',
         maxAge: 1000 * 60 * 15,
       });
