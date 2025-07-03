@@ -62,7 +62,7 @@ export class AuthService {
       res.cookie(COOKIE_REFRESH_TOKEN, refresh_token, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: isProduction ? 'lax' : 'none',
+        sameSite: 'lax',
         path: '/',
         maxAge: 1000 * 60 * 60 * 24 * 7,
       });
@@ -70,7 +70,7 @@ export class AuthService {
       res.cookie(COOKIE_TOKEN, token, {
         httpOnly: true,
         secure: isProduction,
-        sameSite: isProduction ? 'lax' : 'none',
+        sameSite: 'lax',
         path: '/',
         maxAge: 1000 * 60 * 15,
       });
