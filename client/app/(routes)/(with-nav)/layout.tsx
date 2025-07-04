@@ -5,7 +5,7 @@ export default function LayoutWithNavigation({ children }: PropsWithChildren) {
   return (
     <>
       <MainSideBarWrapper>
-        <main className="w-full max-w-7xl mx-auto">{children}</main>
+        <main className="grow max-w-7xl mx-auto overflow-hidden">{children}</main>
       </MainSideBarWrapper>
     </>
   );

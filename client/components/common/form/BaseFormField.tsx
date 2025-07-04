@@ -14,12 +14,14 @@ export function BaseFormField<F extends FieldValues = object>({
   label = '',
   name,
   render = () => null,
+  noMessageError = false,
   className,
 }: {
   formControl: Control<F, unknown, F>;
   label?: string;
   className?: string;
   name: Path<F>;
+  noMessageError?: boolean;
   render: (prop: { field: ControllerRenderProps<F, Path<F>> }) => ReactNode;
 }) {
   if (!formControl) throw new Error('formControl missing.');
@@ -32,7 +34,7 @@ export function BaseFormField<F extends FieldValues = object>({
           <FormLabel>{label}</FormLabel>
           <FormControl>{render({ field })}</FormControl>
           <FormDescription />
-          <FormMessage />
+          {!noMessageError && <FormMessage />}
         </FormItem>
       )}
     />

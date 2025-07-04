@@ -17,7 +17,7 @@ import { BaseSocket } from './type';
   },
 })
 // @UseFilters(new AllWsExceptionsFilter())
-export class ChatGateway {
+export class Gateway {
   @WebSocketServer()
   server: Server;
 
@@ -26,7 +26,7 @@ export class ChatGateway {
     @ConnectedSocket() client: BaseSocket,
     @MessageBody() payload: string,
   ) {
-    client.broadcast.emit('clients', payload);
+    client.broadcast.to(client.id).emit('clients', payload);
   }
 
   @SubscribeMessage('rooms')
@@ -43,23 +43,34 @@ export class ChatGateway {
     void client.join(roomId);
   }
 
+  @SubscribeMessage('leave-room')
+  handleLeaveRoom(
+    @ConnectedSocket() client: BaseSocket,
+    @MessageBody() roomId: string,
+  ) {
+    void client.leave(roomId);
+  }
+
   @SubscribeMessage('send-hall-chat')
   handleAlert(
     @ConnectedSocket() client: BaseSocket,
     @MessageBody()
     payload: { msg: string; id: string; sender: string | undefined },
   ) {
-    client.broadcast.emit('receive-hall-chat', payload);
+    const createdAt = Date.now();
+    client.broadcast
+      .to('hall-chat')
+      .emit('receive-hall-chat', { ...payload, createdAt });
   }
 
   afterInit() {
-    console.log('ChatGateway initialized');
+    console.log('SocketGateway initialized');
   }
 
   handleConnection(client: BaseSocket) {
     const userId = client.handshake.query.userId as string;
     if (!userId) {
-      client.emit('error', {
+      client.to(client.id).emit('error', {
         status: 'error',
         massage: 'userId is required',
       });

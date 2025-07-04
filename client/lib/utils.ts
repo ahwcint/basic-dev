@@ -20,3 +20,7 @@ export function inputGuardNumber(onChange: (...args: unknown[]) => void) {
     onChange(e);
   };
 }
+
+export function isScrolledToBottom(el: HTMLElement, offset = 1): boolean {
+  return el.scrollHeight - el.scrollTop <= el.clientHeight + offset;
+}
