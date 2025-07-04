@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useMemo } from 'react';
-import { BadResponse } from '../api/type';
+import { BadResponse } from '../lib/api/type';
 import { CircleXIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 

@@ -4,7 +4,7 @@ import { UserRole } from '@/services/types/user.type';
 import { RoleGuard } from '@/lib/guard/RoleGuard';
 import { getInformationSeatsService } from '@/services/concert.service';
 import { useQuery } from '@tanstack/react-query';
-import { useFallback } from '@/lib/hooks/useFallback';
+import { useFallback } from '@/hooks/useFallback';
 
 function SeatsInformation() {
   const { data, isError, isLoading, error } = useQuery({

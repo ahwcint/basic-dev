@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { RoleGuard } from '@/lib/guard/RoleGuard';
-import { useFallback } from '@/lib/hooks/useFallback';
+import { useFallback } from '@/hooks/useFallback';
 import { listHistoryConcertReservation } from '@/services/concert.service';
 import { UserRole } from '@/services/types/user.type';
 import { useQuery } from '@tanstack/react-query';

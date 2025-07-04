@@ -8,7 +8,14 @@ export function CardMessage(props: {
   id: string;
   sender: string | undefined;
   createdAt: number;
+  system?: boolean;
 }) {
+  if (props?.system)
+    return (
+      <TextMessage className="text-secondary hover:text-primary-foreground hover:bg-muted w-full text-center font-mono">
+        {props.msg}
+      </TextMessage>
+    );
   return (
     <div className="flex items-start">
       <Avatar className="size-12 shrink-0">

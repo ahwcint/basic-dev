@@ -7,8 +7,10 @@ import {
 } from '@nestjs/websockets';
 import type { Server } from 'socket.io';
 import { BaseSocket } from './type';
-// import { UseFilters } from '@nestjs/common';
-// import { AllWsExceptionsFilter } from './all-exception';
+import { Logger, UseFilters, UseGuards } from '@nestjs/common';
+import { AllWsExceptionsFilter } from './all-exception';
+import { randomUUID } from 'crypto';
+import { WsAuthGuard } from './gatway.guard';
 
 @WebSocketGateway({
   cors: {
@@ -16,7 +18,8 @@ import { BaseSocket } from './type';
     credentials: true,
   },
 })
-// @UseFilters(new AllWsExceptionsFilter())
+@UseFilters(AllWsExceptionsFilter)
+@UseGuards(WsAuthGuard)
 export class Gateway {
   @WebSocketServer()
   server: Server;
@@ -40,6 +43,13 @@ export class Gateway {
     @ConnectedSocket() client: BaseSocket,
     @MessageBody() roomId: string,
   ) {
+    if (client.rooms.has(roomId)) return;
+
+    client.broadcast.to('hall-chat').emit('receive-hall-chat', {
+      id: randomUUID(),
+      msg: `${client.data.user.username} has joined`,
+      system: true,
+    });
     void client.join(roomId);
   }
 
@@ -64,26 +74,14 @@ export class Gateway {
   }
 
   afterInit() {
-    console.log('SocketGateway initialized');
+    Logger.log('SocketGateway initialized', 'SocketGateWay');
   }
 
   handleConnection(client: BaseSocket) {
-    const userId = client.handshake.query.userId as string;
-    if (!userId) {
-      client.to(client.id).emit('error', {
-        status: 'error',
-        massage: 'userId is required',
-      });
-      client.disconnect();
-      return;
-    }
-    void client.join(userId);
-    client.data.userId = userId;
-
-    console.log('Client connected:', userId);
+    console.log('Client connected with:', client.id);
   }
 
   handleDisconnect(client: BaseSocket) {
-    console.log('Client disconnected:', client.data.userId);
+    console.log('Client disconnected:', client.id);
   }
 }

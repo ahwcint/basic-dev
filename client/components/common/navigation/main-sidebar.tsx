@@ -22,7 +22,7 @@ import { SettingsIcon } from 'lucide-react';
 
 export function MainSideBarWrapper({ children }: PropsWithChildren) {
   return (
-    <SidebarProvider open className="flex">
+    <SidebarProvider open={false} className="flex">
       <MainSideBar>{children}</MainSideBar>
     </SidebarProvider>
   );

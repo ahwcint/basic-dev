@@ -10,7 +10,7 @@ import { inputGuardNumber } from '@/lib/utils';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { useCreateConcert } from '@/lib/hooks/concert/useCreateConcert';
+import { useCreateConcert } from '@/hooks/concert/useCreateConcert';
 import { useQueryClient } from '@tanstack/react-query';
 
 const formValidation = z.object({

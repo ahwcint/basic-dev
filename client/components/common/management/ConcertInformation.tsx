@@ -1,5 +1,5 @@
 import { CardConcertInformation } from '../cards/CardConcertInformation';
-import { useListConcert } from '@/lib/hooks/concert/useListConcert';
+import { useListConcert } from '@/hooks/concert/useListConcert';
 import { useState } from 'react';
 import {
   cancelReserveConcertService,
@@ -8,7 +8,7 @@ import {
 } from '@/services/concert.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useFallback } from '@/lib/hooks/useFallback';
+import { useFallback } from '@/hooks/useFallback';
 import { FileNotFound } from '../FileNotFound';
 
 export function ConcertInformation({ isViewMode = false }: { isViewMode?: boolean }) {

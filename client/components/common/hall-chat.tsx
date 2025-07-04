@@ -7,7 +7,6 @@ import { Card } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { SocketRooms } from '@/hooks/use-socket/type';
-import { useWebSocket } from '@/hooks/use-socket/use-websocket';
 import { useAuth } from '@/lib/context/AuthContext';
 import { ChevronDownIcon, SendHorizonalIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -16,12 +15,21 @@ import { ScrollArea } from '../ui/scroll-area';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn, isScrolledToBottom } from '@/lib/utils';
+import { useJoinRoom, useSocket } from '@/hooks/use-socket/socket';
 
-type Chat = { msg: string; id: string; sender: string | undefined; createdAt: number };
+type Chat = {
+  msg: string;
+  id: string;
+  sender: string | undefined;
+  createdAt: number;
+  system?: boolean;
+};
 type FormType = { text: string };
 
 export function HallChat() {
-  const { socket } = useWebSocket({ join: [SocketRooms.HALL_CHAT] });
+  const socket = useSocket();
+  useJoinRoom(SocketRooms.HALL_CHAT);
+
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const isUserNearBottomRef = useRef<boolean>(true);
   const [chat, setChat] = useState<Chat[]>([]);

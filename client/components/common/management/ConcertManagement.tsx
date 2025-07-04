@@ -10,7 +10,7 @@ import { RoleGuard } from '@/lib/guard/RoleGuard';
 import { UserRole } from '@/services/types/user.type';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
-import { useFallback } from '@/lib/hooks/useFallback';
+import { useFallback } from '@/hooks/useFallback';
 
 enum TabsContentValue {
   OVERVIEW = 'overview',
