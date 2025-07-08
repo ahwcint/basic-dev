@@ -17,7 +17,7 @@ export function CardMessage(props: {
       </TextMessage>
     );
   return (
-    <div className="flex items-start">
+    <div className="flex items-start hover:backdrop-invert-[10%]">
       <Avatar className="size-12 shrink-0">
         <AvatarFallback>{props.sender?.slice(0, 3).toUpperCase()}</AvatarFallback>
       </Avatar>

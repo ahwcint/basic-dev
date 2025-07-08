@@ -27,7 +27,7 @@ type Chat = {
 type FormType = { text: string };
 
 export function HallChat() {
-  const socket = useSocket();
+  const { socket } = useSocket();
   useJoinRoom(SocketRooms.HALL_CHAT);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -75,16 +75,14 @@ export function HallChat() {
       createdAt: Date.now(),
     };
     handleStoreChat(payload);
-    socket?.emit('send-hall-chat', payload);
+    socket.emit(SocketRooms.HALL_CHAT, payload);
     form.reset();
   };
 
   useEffect(() => {
-    if (!socket) return;
-
-    socket.on('receive-hall-chat', handleStoreChat);
+    socket.on('message', handleStoreChat);
     return () => {
-      socket.off('receive-hall-chat', handleStoreChat);
+      socket.off('message', handleStoreChat);
     };
   }, [handleStoreChat, socket]);
 

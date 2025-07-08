@@ -6,6 +6,7 @@ import { SocketRooms } from './type';
 import { toast } from 'sonner';
 import { HttpStatusCode } from 'axios';
 import { refreshTokenService } from '@/services/auth.service';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export type SocketResponse<T> = { data: T; success: boolean };
 
@@ -17,6 +18,7 @@ const socket = io(process.env.NEXT_PUBLIC_BACKEND_API, {
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
+  autoConnect: false,
 });
 
 let retry_count = 0;
@@ -52,12 +54,12 @@ socket.on('error', onError);
 // });
 
 export const useJoinRoom = (roomId: SocketRooms) => {
-  const hasJoined = useRef(false);
+  const isJoined = useRef(false);
   useEffect(() => {
     const join = () => {
-      if (hasJoined.current) return;
+      if (isJoined.current) return;
       socket.emit('join-room', roomId);
-      hasJoined.current = true;
+      isJoined.current = true;
     };
 
     if (socket.connected) {
@@ -67,30 +69,32 @@ export const useJoinRoom = (roomId: SocketRooms) => {
     }
 
     return () => {
-      if (!hasJoined.current) socket.emit('leave-room', roomId);
+      if (!isJoined.current) socket.emit('leave-room', roomId);
       socket.off('connect', join);
     };
   }, [roomId]);
-};
 
-export const useLeaveRoom = (roomId: SocketRooms) => {
-  useEffect(() => {
-    const leave = () => {
-      socket.emit('leave-room', roomId);
-    };
-
-    if (socket.connected) {
-      leave();
-    } else {
-      socket.on('connect', leave);
-    }
-
-    return () => {
-      socket.off('connect', leave);
-    };
-  }, [roomId]);
+  return {
+    isJoined: isJoined.current,
+  };
 };
 
 export const useSocket = () => {
-  return socket;
+  const { token } = useAuth();
+
+  useEffect(() => {
+    if (socket.connected) return;
+
+    socket.auth = {
+      token,
+    };
+    socket.connect();
+  }, [token]);
+
+  useEffect(() => {
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+  return { socket, isConnected: socket.connected };
 };

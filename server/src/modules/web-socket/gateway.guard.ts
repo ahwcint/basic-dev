@@ -6,18 +6,16 @@ import {
 } from '@nestjs/common';
 import { BaseSocket } from './type';
 import * as jwt from 'jsonwebtoken';
-import { parse } from 'cookie';
 
 @Injectable()
 export class WsAuthGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const client = context.switchToWs().getClient<BaseSocket>();
-    const cookies = parse(client.handshake.headers.cookie || '');
-    const token = cookies['token'];
+    const { token } = client.handshake.auth;
 
     if (!token) throw new UnauthorizedException('token missing');
 
-    const userTokenDecoded = jwt.decode(token) as typeof client.data;
+    const userTokenDecoded = jwt.decode(token as string) as typeof client.data;
 
     if (!userTokenDecoded) {
       throw new UnauthorizedException('Socket Unauthorized');

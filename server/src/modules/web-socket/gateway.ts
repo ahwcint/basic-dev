@@ -33,6 +33,8 @@ export class Gateway {
   @WebSocketServer()
   server: Server;
 
+  private socketRoomMap = new Map<string, Set<string>>();
+
   @SubscribeMessage('msg-to-everyone')
   handleMessage(
     @ConnectedSocket() client: BaseSocket,
@@ -52,9 +54,13 @@ export class Gateway {
     @ConnectedSocket() client: BaseSocket,
     @MessageBody() roomId: string,
   ) {
-    if (client.rooms.has(roomId)) return;
+    if (!this.socketRoomMap.has(client.id)) {
+      this.socketRoomMap.set(client.id, new Set());
+    }
+    if (this.socketRoomMap.get(client.id)?.has(roomId)) return;
+    this.socketRoomMap.get(client.id)!.add(roomId);
 
-    client.broadcast.to('hall-chat').emit('receive-hall-chat', {
+    client.broadcast.to(roomId).emit('message', {
       id: randomUUID(),
       msg: `${client.data.user.username} has joined`,
       system: true,
@@ -67,19 +73,25 @@ export class Gateway {
     @ConnectedSocket() client: BaseSocket,
     @MessageBody() roomId: string,
   ) {
+    if (!this.socketRoomMap.get(client.id)?.has(roomId)) return;
+    this.socketRoomMap.get(client.id)!.delete(roomId);
+
+    client.broadcast.to(roomId).emit('message', {
+      id: randomUUID(),
+      msg: `${client.data.user.username} just leaved`,
+      system: true,
+    });
     void client.leave(roomId);
   }
 
-  @SubscribeMessage('send-hall-chat')
+  @SubscribeMessage('hall-chat')
   handleAlert(
     @ConnectedSocket() client: BaseSocket,
     @MessageBody()
     payload: { msg: string; id: string; sender: string | undefined },
   ) {
     const createdAt = Date.now();
-    client.broadcast
-      .to('hall-chat')
-      .emit('receive-hall-chat', { ...payload, createdAt });
+    client.broadcast.to('hall-chat').emit('message', { ...payload, createdAt });
   }
 
   afterInit() {
@@ -92,5 +104,6 @@ export class Gateway {
 
   handleDisconnect(client: BaseSocket) {
     console.log('Client disconnected:', client.id);
+    this.handleLeaveRoom(client, 'hall-chat');
   }
 }
