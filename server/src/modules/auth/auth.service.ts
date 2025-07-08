@@ -95,10 +95,12 @@ export class AuthService {
       { sub, user },
       { expiresIn: '15m' },
     );
+    const isProduction = process.env.NODE_ENV === 'production';
+
     res.cookie(COOKIE_TOKEN, newAccessToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
       maxAge: 1000 * 60 * 15,
     });
