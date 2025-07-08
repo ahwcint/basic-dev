@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { Gateway } from './gateway';
 
+@Global()
 @Module({
   providers: [Gateway],
   exports: [Gateway],

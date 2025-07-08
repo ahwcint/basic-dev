@@ -24,5 +24,5 @@ export const listUserService = async () => {
 };
 
 export const refreshTokenService = async () => {
-  return await callApi('GET', '/auth/refresh-token');
+  return await callApi<{ user: User; token: string }>('POST', '/auth/refresh-token');
 };

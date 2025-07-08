@@ -7,17 +7,26 @@ import {
 } from '@nestjs/websockets';
 import type { Server } from 'socket.io';
 import { BaseSocket } from './type';
-import { Logger, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AllWsExceptionsFilter } from './all-exception';
 import { randomUUID } from 'crypto';
-import { WsAuthGuard } from './gatway.guard';
+import { WsAuthGuard } from './gateway.guard';
+import { WsAuthInterceptor } from './gateway.interceptor';
 
+@Injectable()
 @WebSocketGateway({
   cors: {
     origin: ['http://localhost:3000', 'https://www.aummer.space'],
     credentials: true,
   },
 })
+@UseInterceptors(WsAuthInterceptor)
 @UseFilters(AllWsExceptionsFilter)
 @UseGuards(WsAuthGuard)
 export class Gateway {

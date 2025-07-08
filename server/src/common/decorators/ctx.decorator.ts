@@ -8,6 +8,7 @@ export const Ctx = createParamDecorator(
     const refreshToken = request.cookies?.['refresh_token'] as
       | string
       | undefined;
+
     return {
       token,
       refreshToken,

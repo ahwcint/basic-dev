@@ -1,4 +1,9 @@
-import { ArgumentsHost, Catch } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  HttpStatus,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { BaseWsExceptionFilter, WsException } from '@nestjs/websockets';
 import { BaseSocket } from './type';
 
@@ -8,26 +13,29 @@ export class AllWsExceptionsFilter extends BaseWsExceptionFilter {
     const client = host.switchToWs().getClient<BaseSocket>();
 
     let errorResponse: {
-      status: string;
+      success: boolean;
       message?: string;
+      code: HttpStatus;
     } = {
-      status: 'error',
+      success: false,
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Unknown error',
     };
 
     if (exception instanceof WsException) {
       const error = exception.getError();
-      errorResponse =
-        typeof error === 'string'
-          ? { status: 'error', message: error }
-          : { status: 'error', ...error };
+      errorResponse = (
+        typeof error === 'string' ? { message: error } : { ...error }
+      ) as typeof errorResponse;
+      errorResponse.code = HttpStatus.INTERNAL_SERVER_ERROR;
+    } else if (exception instanceof UnauthorizedException) {
+      errorResponse.message = exception.message || 'Unauthorized';
+      errorResponse.code = HttpStatus.UNAUTHORIZED;
     } else if (exception instanceof Error) {
-      errorResponse = {
-        status: 'error',
-        message: exception.message,
-      };
+      errorResponse.message = exception.message;
     }
 
-    client.emit('error', errorResponse);
+    client.emit('error', { ...errorResponse, success: false });
+    return { ...errorResponse, success: false };
   }
 }

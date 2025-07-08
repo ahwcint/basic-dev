@@ -11,7 +11,6 @@ export async function getSession() {
   const token = awaitedCookies.get('token')?.value || '';
   let isRefreshTokenExpired = false;
   let isTokenExpired = false;
-  if (!refreshToken) return {};
 
   let refreshTokenData: TokenData = {} as TokenData;
   let tokenData: TokenData = {} as TokenData;
@@ -25,11 +24,13 @@ export async function getSession() {
     isTokenExpired = true;
     isRefreshTokenExpired = true;
   }
+
   try {
     tokenData = jwtDecode(token);
     user = tokenData.user;
     isTokenExpired = !token || verifyExpiration(tokenData.exp);
   } catch {
+    user = null;
     isTokenExpired = true;
   }
 
@@ -37,6 +38,7 @@ export async function getSession() {
     user,
     isRefreshTokenExpired,
     isTokenExpired,
+    accessToken: token,
   };
 }
 

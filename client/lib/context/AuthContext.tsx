@@ -20,8 +20,9 @@ type AuthFn = (props: {
 }) => void;
 
 type AuthContextType = {
-  user: User | undefined;
-  setUser: (data: User | undefined) => void;
+  token: string;
+  user: User | null;
+  setUser: (data: User | null) => void;
   login: AuthFn;
   register: AuthFn;
   logout: (redirect: boolean) => void;
@@ -32,15 +33,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({
   children,
   user,
-  isRefreshTokenExpired,
   isTokenExpired,
+  isRefreshTokenExpired,
+  accessToken,
 }: PropsWithChildren & {
-  user: User | undefined;
+  user: AuthContextType['user'];
   isRefreshTokenExpired: boolean | undefined;
   isTokenExpired: boolean | undefined;
+  accessToken: string;
 }) {
   const router = useRouter();
-  const [userState, setUserState] = useState<User | undefined>(user);
+  const [userState, setUserState] = useState<AuthContextType['user']>(user);
+  const [token, setToken] = useState<string>(accessToken);
+  const [loading, setLoading] = useState<boolean>(true);
   const { mutate: registerServiceApi } = useMutation({
     mutationKey: ['register-user'],
     mutationFn: registerService,
@@ -69,7 +74,6 @@ export function AuthProvider({
   const logout = useCallback(
     (redirect: boolean) => {
       logoutService().then((res) => {
-        // setUserState(undefined);
         if (res.success && redirect) router.push('/auth/login');
       });
     },
@@ -89,24 +93,36 @@ export function AuthProvider({
     [registerServiceApi],
   );
 
-  const refreshToken = useCallback(async () => {
-    const res = await refreshTokenService();
-    if (res.success) setUserState(res.data as User);
-  }, []);
-
   useEffect(() => {
     setUserState(user);
-  }, [user]);
+    setToken(accessToken);
+  }, [user, accessToken]);
+
+  useEffect(() => {
+    if (isTokenExpired) {
+      refreshTokenService()
+        .then((res) => {
+          setToken(res.data.token);
+          setUserState(res.data.user);
+        })
+        .catch(() => {
+          toast.error('Session expired, logging out...');
+          logout(true);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+      return;
+    }
+
+    setLoading(false);
+  }, [isTokenExpired, logout]);
 
   useEffect(() => {
     if (isRefreshTokenExpired) {
       logout(true);
-      return;
     }
-    if (isTokenExpired) {
-      refreshToken();
-    }
-  }, [isRefreshTokenExpired, isTokenExpired, logout, refreshToken]);
+  }, [isRefreshTokenExpired, logout]);
 
   return (
     <AuthContext.Provider
@@ -116,9 +132,10 @@ export function AuthProvider({
         login,
         setUser: setUserState,
         register,
+        token,
       }}
     >
-      {children}
+      {loading ? <>loading</> : children}
     </AuthContext.Provider>
   );
 }

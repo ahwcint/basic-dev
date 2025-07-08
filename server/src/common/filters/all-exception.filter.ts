@@ -3,7 +3,6 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
-  Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -17,7 +16,6 @@ import { AuthService } from 'src/modules/auth/auth.service';
 import { UserService } from 'src/modules/user/user.service';
 import { ZodError } from 'zod';
 
-@Injectable()
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   constructor(
@@ -89,8 +87,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         }
       }
     }
-
-    console.log('exception :>> ', exception);
 
     response.status(400).json({
       success: false,

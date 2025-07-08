@@ -1,9 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { SocketRooms } from './type';
 import { toast } from 'sonner';
+import { HttpStatusCode } from 'axios';
+import { refreshTokenService } from '@/services/auth.service';
+
+export type SocketResponse<T> = { data: T; success: boolean };
 
 const socket = io(process.env.NEXT_PUBLIC_BACKEND_API, {
   path: '/socket.io',
@@ -15,32 +19,45 @@ const socket = io(process.env.NEXT_PUBLIC_BACKEND_API, {
   reconnectionDelayMax: 5000,
 });
 
-socket.on('error', (res) => {
-  toast.error(res.message);
-});
+let retry_count = 0;
+const MAX_RETRY = 3;
 
-// socket.on('connect', () => {
-//   console.log('✅ Connected');
+const onError = async (res: { code: HttpStatusCode; message: string }) => {
+  if (res.code === HttpStatusCode.Unauthorized) {
+    if (retry_count < MAX_RETRY) {
+      await refreshTokenService();
+      socket.disconnect();
+      socket.connect();
+      retry_count++;
+      return;
+    }
+  }
+  toast.error(res.message || 'Socket error occurred');
+};
+
+const onConnect = () => {
+  console.log('connected');
+};
+
+socket.on('connect', onConnect);
+socket.on('error', onError);
+// socket.on('disconnect', (reason) => {
+//   console.warn('❌ Disconnected:', reason);
+// });
+// socket.on('reconnect_attempt', (attemptNumber) => {
+//   console.warn(`⏳ Trying to reconnect #${attemptNumber}`);
+// });
+// socket.on('reconnect', (attemptNumber) => {
+//   console.warn(`🔥 Reconnected after ${attemptNumber} attempts`);
 // });
 
-socket.on('disconnect', (reason) => {
-  toast.warning('❌ Socket Disconnected');
-  console.warn('❌ Disconnected:', reason);
-});
-
-socket.on('reconnect_attempt', (attemptNumber) => {
-  toast.warning(`⏳ Trying to reconnect #${attemptNumber}`);
-  console.warn(`⏳ Trying to reconnect #${attemptNumber}`);
-});
-
-socket.on('reconnect', (attemptNumber) => {
-  console.log(`🔥 Reconnected after ${attemptNumber} attempts`);
-});
-
 export const useJoinRoom = (roomId: SocketRooms) => {
+  const hasJoined = useRef(false);
   useEffect(() => {
     const join = () => {
+      if (hasJoined.current) return;
       socket.emit('join-room', roomId);
+      hasJoined.current = true;
     };
 
     if (socket.connected) {
@@ -50,8 +67,8 @@ export const useJoinRoom = (roomId: SocketRooms) => {
     }
 
     return () => {
+      if (!hasJoined.current) socket.emit('leave-room', roomId);
       socket.off('connect', join);
-      socket.emit('leave-room', roomId);
     };
   }, [roomId]);
 };
@@ -70,7 +87,6 @@ export const useLeaveRoom = (roomId: SocketRooms) => {
 
     return () => {
       socket.off('connect', leave);
-      socket.emit('leave-room', roomId);
     };
   }, [roomId]);
 };

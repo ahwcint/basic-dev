@@ -103,18 +103,18 @@ export function HallChat() {
   }, []);
   return (
     <>
-      <Card className="rounded-lg p-0 grow overflow-hidden">
+      <Card className="rounded-lg p-0 grow overflow-hidden relative">
         <ScrollArea
           className="size-full p-3 *:data-[slot=scroll-area-viewport]:*:!block"
           viewportRef={viewportRef}
         >
           <div className="flex flex-col gap-2">
-            <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
             {chat.map((i, index) => (
               <CardMessage key={`${i.id}-${index}`} {...i} />
             ))}
           </div>
         </ScrollArea>
+        <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
       </Card>
       <form
         className="h-fit flex flex-row gap-2 *:data-[slot=form-item]:gap-0"
@@ -143,8 +143,8 @@ function ScrollDownBtn({ onClick, open = false }: { onClick?: () => void; open?:
       size="icon"
       onClick={onClick}
       className={cn(
-        'rounded-full absolute bottom-0 right-50 m-2 size-7 -translate-x-1/2 opacity-0',
-        open && 'delay-1000 opacity-100',
+        'rounded-full absolute bottom-0 left-1/2 size-7 opacity-0 -translate-x-1/2 my-2',
+        open && 'delay-500 opacity-100',
       )}
     >
       <ChevronDownIcon />

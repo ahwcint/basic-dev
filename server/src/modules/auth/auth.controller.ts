@@ -60,7 +60,7 @@ export class AuthController {
 
   @ResponseMsg('Refresh token successfully.')
   @Public()
-  @Get('refresh-token')
+  @Post('refresh-token')
   async refreshToken(
     @Res({ passthrough: true }) res: Response,
     @Ctx() ctx: CtxRequest,
@@ -68,8 +68,8 @@ export class AuthController {
     if (!ctx.refreshToken) throw new UnauthorizedException('Invalid token');
     const result = this.authService.validateToken(ctx.refreshToken);
     const user = await this.userService.findOne(result.sub);
-    this.authService.refreshToken(result.sub, user, res);
+    const newAccessToken = this.authService.refreshToken(result.sub, user, res);
 
-    return user;
+    return { user, token: newAccessToken };
   }
 }

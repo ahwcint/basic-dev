@@ -6,13 +6,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './common/filters/all-exception.filter';
 import { WebSocketModule } from './modules/web-socket/web-socket.module';
-import { AllWsExceptionsFilter } from './modules/web-socket/all-exception';
 
 @Module({
-  providers: [
-    { provide: APP_FILTER, useClass: AllExceptionsFilter },
-    { provide: APP_FILTER, useClass: AllWsExceptionsFilter },
-  ],
+  providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
   imports: [
     AuthModule,
     PrismaModule,
