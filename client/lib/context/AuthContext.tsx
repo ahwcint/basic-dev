@@ -12,6 +12,7 @@ import type { PropsWithChildren } from 'react';
 import { User } from '@/services/types/user.type';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
 
 type AuthFn = (props: {
   payload: { username: string; password: string };
@@ -45,7 +46,7 @@ export function AuthProvider({
   const router = useRouter();
   const [userState, setUserState] = useState<AuthContextType['user']>(user);
   const [token, setToken] = useState<string>(accessToken);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(!accessToken);
   const { mutate: registerServiceApi } = useMutation({
     mutationKey: ['register-user'],
     mutationFn: registerService,
@@ -99,7 +100,7 @@ export function AuthProvider({
   }, [user, accessToken]);
 
   useEffect(() => {
-    if (isTokenExpired) {
+    if (isTokenExpired && !isRefreshTokenExpired) {
       refreshTokenService()
         .then((res) => {
           setToken(res.data.token);
@@ -116,7 +117,7 @@ export function AuthProvider({
     }
 
     setLoading(false);
-  }, [isTokenExpired, logout]);
+  }, [isRefreshTokenExpired, isTokenExpired, logout]);
 
   useEffect(() => {
     if (isRefreshTokenExpired) {
@@ -135,7 +136,13 @@ export function AuthProvider({
         token,
       }}
     >
-      {loading ? <>loading</> : children}
+      {loading ? (
+        <div className="size-full p-2">
+          <Skeleton className="size-full" />
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 }

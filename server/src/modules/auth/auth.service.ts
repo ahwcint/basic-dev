@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import type { Response } from 'express';
 import { COOKIE_REFRESH_TOKEN, COOKIE_TOKEN } from './auth.schema';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -90,7 +91,7 @@ export class AuthService {
     };
   }
 
-  refreshToken(sub: string, user: unknown, res: Response) {
+  refreshToken(sub: User['id'], user: unknown, res: Response) {
     const newAccessToken = this.jwtService.sign(
       { sub, user },
       { expiresIn: '15m' },
