@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
-import { BaseFormField } from '../form/BaseFormField';
+import { BaseFormField } from '../form/base-form-field';
 import { Textarea } from '@/components/ui/textarea';
 import { SaveIcon, UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/custom-button';
@@ -10,7 +10,7 @@ import { inputGuardNumber } from '@/lib/utils';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { useCreateConcert } from '@/hooks/concert/useCreateConcert';
+import { useCreateConcert } from '@/hooks/concert/use-create-concert';
 import { useQueryClient } from '@tanstack/react-query';
 
 const formValidation = z.object({

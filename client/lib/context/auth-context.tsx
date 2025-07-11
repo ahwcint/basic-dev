@@ -6,13 +6,13 @@ import {
   refreshTokenService,
   registerService,
 } from '@/services/auth.service';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import type { PropsWithChildren } from 'react';
+import type { Dispatch, PropsWithChildren, SetStateAction } from 'react';
 import { User } from '@/services/types/user.type';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Skeleton } from '@/components/ui/skeleton';
+import { ComponentLoading } from '@/components/common/component-loading';
 
 type AuthFn = (props: {
   payload: { username: string; password: string };
@@ -23,30 +23,34 @@ type AuthFn = (props: {
 type AuthContextType = {
   token: string;
   user: User | null;
-  setUser: (data: User | null) => void;
   login: AuthFn;
   register: AuthFn;
   logout: (redirect: boolean) => void;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({
   children,
-  user,
   isTokenExpired,
   isRefreshTokenExpired,
   accessToken,
+  accessUser,
 }: PropsWithChildren & {
-  user: AuthContextType['user'];
+  accessUser: User | null;
   isRefreshTokenExpired: boolean | undefined;
   isTokenExpired: boolean | undefined;
   accessToken: string;
 }) {
   const router = useRouter();
-  const [userState, setUserState] = useState<AuthContextType['user']>(user);
+  const pathname = usePathname();
+  const isAuthPath = pathname.startsWith('/auth');
+  const [loading, setLoading] = useState<boolean>(true);
   const [token, setToken] = useState<string>(accessToken);
-  const [loading, setLoading] = useState<boolean>(!accessToken);
+  const [user, setUser] = useState<User | null>(accessUser);
+
   const { mutate: registerServiceApi } = useMutation({
     mutationKey: ['register-user'],
     mutationFn: registerService,
@@ -61,9 +65,8 @@ export function AuthProvider({
   const login: AuthContextType['login'] = useCallback(
     ({ payload, onSettled, onSuccess }) => {
       loginServiceApi(payload, {
-        onSuccess: (res) => {
-          toast.success(res.message);
-          setUserState(res.data);
+        onSuccess: () => {
+          setLoading(true);
           onSuccess?.();
         },
         onSettled,
@@ -77,6 +80,8 @@ export function AuthProvider({
       logoutService().then((res) => {
         if (res.success && redirect) router.push('/auth/login');
       });
+      setUser(null);
+      setToken('');
     },
     [router],
   );
@@ -84,8 +89,8 @@ export function AuthProvider({
   const register: AuthContextType['register'] = useCallback(
     ({ payload, onSettled, onSuccess }) => {
       registerServiceApi(payload, {
-        onSuccess: (res) => {
-          setUserState(res.data);
+        onSuccess: () => {
+          setLoading(true);
           onSuccess?.();
         },
         onSettled,
@@ -95,16 +100,15 @@ export function AuthProvider({
   );
 
   useEffect(() => {
-    setUserState(user);
-    setToken(accessToken);
-  }, [user, accessToken]);
-
-  useEffect(() => {
+    if (isAuthPath) return;
+    if (isRefreshTokenExpired) {
+      logout(true);
+    }
     if (isTokenExpired && !isRefreshTokenExpired) {
       refreshTokenService()
         .then((res) => {
           setToken(res.data.token);
-          setUserState(res.data.user);
+          setUser(res.data.user);
         })
         .catch(() => {
           toast.error('Session expired, logging out...');
@@ -115,34 +119,31 @@ export function AuthProvider({
         });
       return;
     }
-
-    setLoading(false);
-  }, [isRefreshTokenExpired, isTokenExpired, logout]);
+  }, [isRefreshTokenExpired, isTokenExpired, logout, isAuthPath]);
 
   useEffect(() => {
-    if (isRefreshTokenExpired) {
-      logout(true);
-    }
-  }, [isRefreshTokenExpired, logout]);
+    if (isAuthPath) return setLoading(false);
 
+    setToken(accessToken);
+    setUser(accessUser);
+  }, [accessToken, isAuthPath, accessUser]);
+
+  useEffect(() => {
+    if (!isAuthPath) setLoading(!(user && token));
+  }, [user, token, isAuthPath]);
   return (
     <AuthContext.Provider
       value={{
-        user: userState,
         logout,
         login,
-        setUser: setUserState,
         register,
         token,
+        setLoading,
+        loading,
+        user,
       }}
     >
-      {loading ? (
-        <div className="size-full p-2">
-          <Skeleton className="size-full" />
-        </div>
-      ) : (
-        children
-      )}
+      {loading ? <ComponentLoading className="p-2" /> : children}
     </AuthContext.Provider>
   );
 }
@@ -151,5 +152,5 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must used within AuthProvider');
 
-  return context as AuthContextType & { user: User };
+  return context as AuthContextType;
 }

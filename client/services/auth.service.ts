@@ -1,4 +1,4 @@
-import { callApi } from '@/lib/api/callApi';
+import { callApi } from '@/lib/api/call-api';
 import { User, UserRole } from '@/services/types/user.type';
 
 export const loginService = async (payload: { username: string; password: string }) => {

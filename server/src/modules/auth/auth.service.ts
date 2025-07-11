@@ -13,6 +13,9 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
+  /**
+   * use for validate username and password
+   */
   async validate(
     { username, password }: { username: string; password: string },
     /**
@@ -83,9 +86,13 @@ export class AuthService {
     };
   }
 
+  /**
+   * use for verify valid token
+   */
   validateToken(token: string) {
     return this.jwtService.verify(token) as unknown as {
       sub: string;
+      user: User;
       exp: number;
       iat: number;
     };

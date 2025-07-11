@@ -8,9 +8,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/context/AuthContext';
+import { useAuth } from '@/lib/context/auth-context';
 import { useState } from 'react';
-import { BaseFormField } from '@/components/common/form/BaseFormField';
+import { BaseFormField } from '@/components/common/form/base-form-field';
 
 const loginSchema = z.object({
   username: z.string().min(1).max(20),

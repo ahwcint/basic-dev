@@ -1,4 +1,4 @@
-import { callApi } from '@/lib/api/callApi';
+import { callApi } from '@/lib/api/call-api';
 import { ConcertAuditLog, ConcertType, SeatsInformation } from '@/services/types/concert.type';
 
 const MODULE_NAME = 'concert';

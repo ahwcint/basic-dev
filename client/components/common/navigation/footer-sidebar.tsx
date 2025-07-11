@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { LogOutIcon, SettingsIcon, SunMoonIcon, UserCogIcon } from 'lucide-react';
-import { useAuth } from '@/lib/context/AuthContext';
+import { useAuth } from '@/lib/context/auth-context';
 import { useMemo } from 'react';
 import { ButtonModeToggle } from '../mode-toggle';
 

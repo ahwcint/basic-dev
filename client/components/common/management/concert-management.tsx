@@ -3,14 +3,14 @@ import { ComponentProps, useEffect, useState } from 'react';
 import { BaseContainer } from '../base-container';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ConcertInformation } from './ConcertInformation';
+import { ConcertInformation } from './concert-information';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CreateConcertManagement } from './CreateConcertManagement';
-import { RoleGuard } from '@/lib/guard/RoleGuard';
+import { CreateConcertManagement } from './create-concert-management';
+import { RoleGuard } from '@/lib/guard/role-guard';
 import { UserRole } from '@/services/types/user.type';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
-import { useFallback } from '@/hooks/useFallback';
+import { useFallback } from '@/hooks/use-fallback';
 
 enum TabsContentValue {
   OVERVIEW = 'overview',

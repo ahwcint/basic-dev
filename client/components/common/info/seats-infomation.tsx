@@ -1,10 +1,10 @@
 import { AwardIcon, CircleXIcon, UserIcon } from 'lucide-react';
-import { CardBanner } from '@/components/common/cards/CardBanner';
+import { CardBanner } from '@/components/common/cards/card-banner';
 import { UserRole } from '@/services/types/user.type';
-import { RoleGuard } from '@/lib/guard/RoleGuard';
+import { RoleGuard } from '@/lib/guard/role-guard';
 import { getInformationSeatsService } from '@/services/concert.service';
 import { useQuery } from '@tanstack/react-query';
-import { useFallback } from '@/hooks/useFallback';
+import { useFallback } from '@/hooks/use-fallback';
 
 function SeatsInformation() {
   const { data, isError, isLoading, error } = useQuery({

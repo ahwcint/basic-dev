@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/auth-context';
 import { usePathname, useRouter } from 'next/navigation';
 import { UserRole } from '@/services/types/user.type';
 

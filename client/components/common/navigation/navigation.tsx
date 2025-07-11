@@ -1,11 +1,11 @@
 'use client';
 
 import { HomeIcon, Inbox, LogOut, RefreshCcw } from 'lucide-react';
-import { useAuth } from '@/lib/context/AuthContext';
+import { useAuth } from '@/lib/context/auth-context';
 import { changeRoleUser } from '@/services/auth.service';
 import { UserRole } from '@/services/types/user.type';
 import { toast } from 'sonner';
-import { NavigationList } from './NavigationList';
+import { NavigationList } from './navigation-list';
 import { usePathname } from 'next/navigation';
 
 export function Navigation() {

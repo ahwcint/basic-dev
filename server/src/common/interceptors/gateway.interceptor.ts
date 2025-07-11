@@ -1,6 +1,7 @@
 import {
   CallHandler,
   ExecutionContext,
+  HttpStatus,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
@@ -12,7 +13,7 @@ export class WsAuthInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data: unknown) => {
-        return { success: true, data };
+        return { success: true, data, code: HttpStatus.OK };
       }),
     );
   }

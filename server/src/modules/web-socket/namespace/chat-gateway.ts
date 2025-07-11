@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import type { Server } from 'socket.io';
-import { BaseSocket } from './type';
+import { BaseSocket } from '../type';
 import {
   Injectable,
   Logger,
@@ -14,22 +14,26 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AllWsExceptionsFilter } from './all-exception';
 import { randomUUID } from 'crypto';
-import { WsAuthGuard } from './gateway.guard';
-import { WsAuthInterceptor } from './gateway.interceptor';
+import { WsAuthGuard } from 'src/common/guards/gateway.guard';
+import { AllWsExceptionsFilter } from 'src/common/filters/all-ws-exception';
+import { WsAuthInterceptor } from 'src/common/interceptors/gateway.interceptor';
+import { SocketAuthMiddleware } from '../socket-auth-middleware.guard';
 
 @Injectable()
 @WebSocketGateway({
+  namespace: '/hall-chat',
+  path: '/hall-chat/socket.io',
   cors: {
     origin: ['http://localhost:3000', 'https://www.aummer.space'],
     credentials: true,
   },
 })
-@UseInterceptors(WsAuthInterceptor)
-@UseFilters(AllWsExceptionsFilter)
 @UseGuards(WsAuthGuard)
-export class Gateway {
+@UseFilters(AllWsExceptionsFilter)
+@UseInterceptors(WsAuthInterceptor)
+export class ChatGateway {
+  constructor(private auth: SocketAuthMiddleware) {}
   @WebSocketServer()
   server: Server;
 
@@ -54,15 +58,15 @@ export class Gateway {
     @ConnectedSocket() client: BaseSocket,
     @MessageBody() roomId: string,
   ) {
-    if (!this.socketRoomMap.has(client.id)) {
-      this.socketRoomMap.set(client.id, new Set());
+    if (!this.socketRoomMap.has(client.data.user.id)) {
+      this.socketRoomMap.set(client.data.user.id, new Set());
     }
-    if (this.socketRoomMap.get(client.id)?.has(roomId)) return;
-    this.socketRoomMap.get(client.id)!.add(roomId);
+    if (this.socketRoomMap.get(client.data.user.id)?.has(roomId)) return;
+    this.socketRoomMap.get(client.data.user.id)!.add(roomId);
 
     client.broadcast.to(roomId).emit('message', {
       id: randomUUID(),
-      msg: `${client.data.user.username} has joined`,
+      msg: `${client.data.user.username} has online`,
       system: true,
     });
     void client.join(roomId);
@@ -73,12 +77,12 @@ export class Gateway {
     @ConnectedSocket() client: BaseSocket,
     @MessageBody() roomId: string,
   ) {
-    if (!this.socketRoomMap.get(client.id)?.has(roomId)) return;
-    this.socketRoomMap.get(client.id)!.delete(roomId);
+    if (!this.socketRoomMap.get(client.data.user.id)?.has(roomId)) return;
+    this.socketRoomMap.get(client.data.user.id)!.delete(roomId);
 
     client.broadcast.to(roomId).emit('message', {
       id: randomUUID(),
-      msg: `${client.data.user.username} just leaved`,
+      msg: `${client.data.user.username} just offline`,
       system: true,
     });
     void client.leave(roomId);
@@ -94,8 +98,9 @@ export class Gateway {
     client.broadcast.to('hall-chat').emit('message', { ...payload, createdAt });
   }
 
-  afterInit() {
+  afterInit(server: Server) {
     Logger.log('SocketGateway initialized', 'SocketGateWay');
+    server.use(this.auth.use);
   }
 
   handleConnection(client: BaseSocket) {

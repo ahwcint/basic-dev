@@ -2,7 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { JwtAuthGuard } from './modules/auth/jwt.guard';
+import { JwtAuthGuard } from './common/guards/jwt.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

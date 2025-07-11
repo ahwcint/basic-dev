@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAuth } from '@/lib/context/AuthContext';
-import { BaseFormField } from '@/components/common/form/BaseFormField';
+import { useAuth } from '@/lib/context/auth-context';
+import { BaseFormField } from '@/components/common/form/base-form-field';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
