@@ -17,7 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { cn, isScrolledToBottom } from '@/lib/utils';
 import { useJoinRoom, useSocket } from '@/hooks/use-socket/socket';
 import { Avatar, AvatarFallback } from '../ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 type Chat = {
   msg: string;

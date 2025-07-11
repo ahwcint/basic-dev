@@ -9,7 +9,7 @@ import { NavigationList } from './navigation-list';
 import { usePathname } from 'next/navigation';
 
 export function Navigation() {
-  const { logout, user, setUser } = useAuth();
+  const { logout, user } = useAuth();
   const pathname = usePathname();
 
   if (!user || pathname.startsWith('/auth')) return null;
@@ -24,7 +24,6 @@ export function Navigation() {
     if (!res.success) return;
 
     toast.success(`${res.message} to ${res.data.role}`);
-    setUser(res.data);
   };
 
   const handleLogOut = () => {
