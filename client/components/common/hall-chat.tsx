@@ -18,6 +18,7 @@ import { cn, isScrolledToBottom } from '@/lib/utils';
 import { useJoinRoom, useSocket } from '@/hooks/use-socket/socket';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import { User } from '@/services/types/user.type';
 
 type Chat = {
   msg: string;
@@ -36,6 +37,7 @@ export function HallChat() {
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const isUserNearBottomRef = useRef<boolean>(true);
   const [chat, setChat] = useState<Chat[]>([]);
+  const [activeUsers, setActiveUsers] = useState<User[]>([]);
   const [showScrollDownBtn, setShowScrollDownBtn] = useState(!isUserNearBottomRef.current);
 
   const form = useForm<FormType>({
@@ -81,15 +83,7 @@ export function HallChat() {
     form.reset();
   };
 
-  useEffect(() => {
-    socket.on('message', handleStoreChat);
-    return () => {
-      socket.off('message', handleStoreChat);
-    };
-  }, [handleStoreChat, socket]);
-
-  useEffect(() => {
-    const el = viewportRef.current;
+  const scrollDownHandler = useCallback((el: HTMLDivElement | null) => {
     if (!el) return;
 
     const handleScroll = () => {
@@ -101,9 +95,29 @@ export function HallChat() {
     el.addEventListener('scroll', handleScroll);
     return () => el.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const handleListActiveUser = (users: User[]) => {
+      const usersWithoutMe = users.filter((v) => v.id !== user.id);
+      setActiveUsers(usersWithoutMe);
+    };
+
+    socket.on(SocketRooms.MSG, handleStoreChat);
+
+    socket.on(SocketRooms.ACTIVE_USER, handleListActiveUser);
+    return () => {
+      socket.off(SocketRooms.ACTIVE_USER, handleListActiveUser);
+      socket.off(SocketRooms.MSG, handleStoreChat);
+    };
+  }, [handleStoreChat, socket, user]);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    return scrollDownHandler(el);
+  }, [scrollDownHandler]);
   return (
     <>
-      <div className="grow flex gap-2">
+      <div className="grow flex gap-2 overflow-hidden">
         <Card className="rounded-lg p-0 grow overflow-hidden relative">
           <ScrollArea
             className="size-full p-3 *:data-[slot=scroll-area-viewport]:*:!block"
@@ -117,15 +131,21 @@ export function HallChat() {
           </ScrollArea>
           <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
         </Card>
-        <Card className="w-[36px] rounded-lg items-center">
-          <Avatar>
-            <Tooltip>
-              <AvatarFallback>
-                <TooltipTrigger>hi</TooltipTrigger>
-              </AvatarFallback>
-              <TooltipContent side={'left'}>test</TooltipContent>
-            </Tooltip>
-          </Avatar>
+        <Card className="w-[36px] rounded-lg block">
+          <ScrollArea className="size-full" viewportRef={viewportRef}>
+            <div className="flex flex-col items-center gap-1">
+              {activeUsers.map((user) => (
+                <Avatar key={`tab-list-${user.id}`}>
+                  <Tooltip>
+                    <AvatarFallback>
+                      <TooltipTrigger>{user.username.slice(0, 2)}</TooltipTrigger>
+                    </AvatarFallback>
+                    <TooltipContent side={'left'}>{user.username}</TooltipContent>
+                  </Tooltip>
+                </Avatar>
+              ))}
+            </div>
+          </ScrollArea>
         </Card>
       </div>
       <form

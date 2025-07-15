@@ -14,3 +14,5 @@ export type BaseSocketData = {
   iat: number;
   exp: number;
 };
+
+export type SafeUser = Omit<User, 'password'>;

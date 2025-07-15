@@ -6,7 +6,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import type { Server } from 'socket.io';
-import { BaseSocket } from '../type';
+import { BaseSocket, SafeUser } from '../type';
 import {
   Injectable,
   Logger,
@@ -20,10 +20,12 @@ import { AllWsExceptionsFilter } from 'src/common/filters/all-ws-exception';
 import { WsAuthInterceptor } from 'src/common/interceptors/gateway.interceptor';
 import { SocketAuthMiddleware } from '../socket-auth-middleware.guard';
 
+const NAMESPACE = 'hall-chat' as const;
+
 @Injectable()
 @WebSocketGateway({
-  namespace: '/hall-chat',
-  path: '/hall-chat/socket.io',
+  namespace: `/${NAMESPACE}`,
+  path: `/${NAMESPACE}`,
   cors: {
     origin: ['http://localhost:3000', 'https://www.aummer.space'],
     credentials: true,
@@ -38,6 +40,7 @@ export class ChatGateway {
   server: Server;
 
   private socketRoomMap = new Map<string, Set<string>>();
+  private activeUsers = new Map<string, SafeUser>();
 
   @SubscribeMessage('msg-to-everyone')
   handleMessage(
@@ -69,7 +72,11 @@ export class ChatGateway {
       msg: `${client.data.user.username} has online`,
       system: true,
     });
+
     void client.join(roomId);
+
+    // message for active user
+    this.handleListActiveUser();
   }
 
   @SubscribeMessage('leave-room')
@@ -86,16 +93,27 @@ export class ChatGateway {
       system: true,
     });
     void client.leave(roomId);
+    this.handleListActiveUser();
   }
 
-  @SubscribeMessage('hall-chat')
+  @SubscribeMessage(NAMESPACE)
   handleAlert(
     @ConnectedSocket() client: BaseSocket,
     @MessageBody()
     payload: { msg: string; id: string; sender: string | undefined },
   ) {
     const createdAt = Date.now();
-    client.broadcast.to('hall-chat').emit('message', { ...payload, createdAt });
+    client.broadcast.to(NAMESPACE).emit('message', { ...payload, createdAt });
+  }
+
+  handleListActiveUser() {
+    const activeUsers: SafeUser[] = [];
+
+    this.activeUsers.forEach((user) => {
+      activeUsers.push(user);
+    });
+
+    this.server.to(NAMESPACE).emit('list-active-user', activeUsers);
   }
 
   afterInit(server: Server) {
@@ -104,11 +122,13 @@ export class ChatGateway {
   }
 
   handleConnection(client: BaseSocket) {
+    this.activeUsers.set(client.data.user.id, client.data.user);
     console.log('Client connected with:', client.id);
   }
 
   handleDisconnect(client: BaseSocket) {
     console.log('Client disconnected:', client.id);
-    this.handleLeaveRoom(client, 'hall-chat');
+    this.activeUsers.delete(client.data.user.id);
+    this.handleLeaveRoom(client, NAMESPACE);
   }
 }

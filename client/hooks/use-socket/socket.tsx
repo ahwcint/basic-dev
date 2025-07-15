@@ -5,6 +5,7 @@ import { io, Socket } from 'socket.io-client';
 import { SocketRooms } from './type';
 import { useAuth } from '@/lib/context/auth-context';
 import { ComponentLoading } from '@/components/common/component-loading';
+import { toast } from 'sonner';
 
 export type SocketResponse<T> = { data: T; success: boolean };
 
@@ -88,7 +89,7 @@ export const SocketProvider = ({
 
   if (!socketRef) {
     const socket = io(`${process.env.NEXT_PUBLIC_BACKEND_API}/${namespace}`, {
-      path: `/${namespace}/socket.io`,
+      path: `/${namespace}`,
       transports: ['websocket'],
       withCredentials: true,
       reconnection: true,
@@ -104,6 +105,9 @@ export const SocketProvider = ({
     socketRef = socket;
     socket.on('connect', () => {
       console.log('connected');
+    });
+    socket.on('connect_error', () => {
+      toast.error(`something went wrong on ${namespace}`);
     });
   }
 

@@ -152,5 +152,5 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must used within AuthProvider');
 
-  return context as AuthContextType;
+  return context as AuthContextType & { user: User };
 }
