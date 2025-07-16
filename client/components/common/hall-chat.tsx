@@ -44,7 +44,7 @@ export function HallChat() {
     defaultValues: { text: '' },
     resolver: zodResolver(
       z.object({
-        text: z.string().trim().min(1),
+        text: z.string().trim().min(1).max(200),
       }),
     ),
   });
@@ -130,7 +130,7 @@ export function HallChat() {
           </ScrollArea>
           <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
         </Card>
-        <Card className="w-[36px] rounded-lg block">
+        <Card className="w-[36px] rounded-lg block shrink-0">
           <ScrollArea className="size-full">
             <div className="flex flex-col items-center gap-1">
               {activeUsers.map((user) => (
@@ -156,8 +156,9 @@ export function HallChat() {
             className="grow"
             name="text"
             formControl={form.control}
-            render={({ field }) => <Input {...field} placeholder=". . . ." />}
+            render={({ field }) => <Input {...field} placeholder=". . . ." maxLength={200} />}
             noMessageError
+            toastError
           />
           <Button size="icon" type="submit">
             <SendHorizonalIcon />

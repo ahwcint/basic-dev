@@ -15,6 +15,7 @@ import {
 
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 const Form = FormProvider;
 
@@ -140,6 +141,18 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   );
 }
 
+function FormToastError() {
+  const { error, formMessageId } = useFormField();
+
+  React.useEffect(() => {
+    const body = String(error?.message ?? '');
+    if (!body) return;
+    toast.error(body, { id: formMessageId });
+  }, [error, formMessageId]);
+
+  return null;
+}
+
 export {
   useFormField,
   Form,
@@ -149,4 +162,5 @@ export {
   FormDescription,
   FormMessage,
   FormField,
+  FormToastError,
 };

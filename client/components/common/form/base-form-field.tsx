@@ -5,6 +5,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormToastError,
 } from '@/components/ui/form';
 import { ReactNode } from 'react';
 import type { Control, ControllerRenderProps, FieldValues, Path } from 'react-hook-form';
@@ -15,6 +16,7 @@ export function BaseFormField<F extends FieldValues = object>({
   name,
   render = () => null,
   noMessageError = false,
+  toastError = false,
   className,
 }: {
   formControl: Control<F, unknown, F>;
@@ -22,6 +24,7 @@ export function BaseFormField<F extends FieldValues = object>({
   className?: string;
   name: Path<F>;
   noMessageError?: boolean;
+  toastError?: boolean;
   render: (prop: { field: ControllerRenderProps<F, Path<F>> }) => ReactNode;
 }) {
   if (!formControl) throw new Error('formControl missing.');
@@ -35,6 +38,7 @@ export function BaseFormField<F extends FieldValues = object>({
           <FormControl>{render({ field })}</FormControl>
           <FormDescription />
           {!noMessageError && <FormMessage />}
+          {toastError && <FormToastError />}
         </FormItem>
       )}
     />
