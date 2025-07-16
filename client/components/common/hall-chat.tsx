@@ -85,7 +85,6 @@ export function HallChat() {
 
   const scrollDownHandler = useCallback((el: HTMLDivElement | null) => {
     if (!el) return;
-
     const handleScroll = () => {
       const nearBottom = isScrolledToBottom(el, 100);
       isUserNearBottomRef.current = nearBottom;
@@ -132,7 +131,7 @@ export function HallChat() {
           <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
         </Card>
         <Card className="w-[36px] rounded-lg block">
-          <ScrollArea className="size-full" viewportRef={viewportRef}>
+          <ScrollArea className="size-full">
             <div className="flex flex-col items-center gap-1">
               {activeUsers.map((user) => (
                 <Avatar key={`tab-list-${user.id}`}>
