@@ -11,7 +11,7 @@ import { useAuth } from '@/lib/context/auth-context';
 import { ChevronDownIcon, SendHorizonalIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollArea } from '../ui/scroll-area';
+import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cn, isScrolledToBottom } from '@/lib/utils';
@@ -116,37 +116,20 @@ export function HallChat() {
   }, [scrollDownHandler]);
   return (
     <>
-      <div className="grow flex gap-2 overflow-hidden">
-        <Card className="rounded-lg p-0 grow overflow-hidden relative">
-          <ScrollArea
-            className="size-full p-3 *:data-[slot=scroll-area-viewport]:*:!block"
-            viewportRef={viewportRef}
-          >
-            <div className="flex flex-col gap-2">
-              {chat.map((i, index) => (
-                <CardMessage key={`${i.id}-${index}`} {...i} />
-              ))}
-            </div>
-          </ScrollArea>
-          <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
-        </Card>
-        <Card className="w-[36px] rounded-lg block shrink-0">
-          <ScrollArea className="size-full">
-            <div className="flex flex-col items-center gap-1">
-              {activeUsers.map((user) => (
-                <Avatar key={`tab-list-${user.id}`}>
-                  <Tooltip>
-                    <AvatarFallback>
-                      <TooltipTrigger>{user.username.slice(0, 2)}</TooltipTrigger>
-                    </AvatarFallback>
-                    <TooltipContent side={'left'}>{user.username}</TooltipContent>
-                  </Tooltip>
-                </Avatar>
-              ))}
-            </div>
-          </ScrollArea>
-        </Card>
-      </div>
+      <Card className="rounded-lg p-0 grow overflow-hidden relative !glass-morphism">
+        <ScrollArea
+          className="size-full p-3 *:data-[slot=scroll-area-viewport]:*:!block"
+          viewportRef={viewportRef}
+        >
+          <div className="flex flex-col gap-2 pt-10">
+            {chat.map((i, index) => (
+              <CardMessage key={`${i.id}-${index}`} {...i} />
+            ))}
+          </div>
+        </ScrollArea>
+        <ScrollDownBtn onClick={handleScrollLastMsg} open={showScrollDownBtn} />
+        <DisplayUserOnline data={activeUsers} />
+      </Card>
       <form
         className="h-fit flex flex-row gap-2 *:data-[slot=form-item]:gap-0"
         onSubmit={form.handleSubmit(handleSendMsg)}
@@ -156,11 +139,18 @@ export function HallChat() {
             className="grow"
             name="text"
             formControl={form.control}
-            render={({ field }) => <Input {...field} placeholder=". . . ." maxLength={200} />}
+            render={({ field }) => (
+              <Input {...field} placeholder=". . . ." maxLength={200} className="!glass-morphism" />
+            )}
             noMessageError
             toastError
           />
-          <Button size="icon" type="submit">
+          <Button
+            size="icon"
+            type="submit"
+            onMouseDown={(e) => e.preventDefault()}
+            className="rounded-full"
+          >
             <SendHorizonalIcon />
           </Button>
         </Form>
@@ -181,5 +171,32 @@ function ScrollDownBtn({ onClick, open = false }: { onClick?: () => void; open?:
     >
       <ChevronDownIcon />
     </Button>
+  );
+}
+
+function DisplayUserOnline<T extends Record<string, string>[]>({ data }: { data: T }) {
+  return (
+    <Card
+      className="rounded-full m-1 absolute right-0 top-0 p-0 max-w-[calc(80%-0.50rem)] overflow-hidden !glass-morphism"
+      hidden={!data.length}
+    >
+      <ScrollArea className="size-full">
+        <div className="flex gap-1 p-1">
+          {data.map((user) => (
+            <Avatar key={`tab-list-${user.id}`}>
+              <Tooltip>
+                <AvatarFallback>
+                  <TooltipTrigger className="cursor-default">
+                    {user.username.slice(0, 2)}
+                  </TooltipTrigger>
+                </AvatarFallback>
+                <TooltipContent side={'bottom'}>{user.username}</TooltipContent>
+              </Tooltip>
+            </Avatar>
+          ))}
+        </div>
+        <ScrollBar orientation="horizontal" hidden />
+      </ScrollArea>
+    </Card>
   );
 }

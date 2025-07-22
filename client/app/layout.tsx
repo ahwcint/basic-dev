@@ -27,7 +27,7 @@ export default async function RootLayout({
   const { isRefreshTokenExpired, isTokenExpired, accessToken, user } = await getSession();
   return (
     <html lang="en" className={cn(notoSansThai.variable)} suppressHydrationWarning>
-      <body className={cn('flex m-auto rounded overflow-clip border')}>
+      <body className={cn('flex m-auto rounded overflow-clip border background-primary')}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <MainQueryClientProvider>
             <AuthProvider
