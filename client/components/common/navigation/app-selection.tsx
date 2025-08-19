@@ -8,13 +8,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
-import { ChevronsUpDownIcon } from 'lucide-react';
+import { ChevronsUpDownIcon, FileArchive } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 
 export function AppSelection({ isMobile }: { isMobile: boolean }) {
+  const router = useRouter();
   const side = useMemo(() => {
     return isMobile ? undefined : 'right';
   }, [isMobile]);
+
+  const MenuItems = useMemo(() => {
+    return [{ icon: <FileArchive />, label: 'ข้าวตัง', link: '/files-manipulation' }];
+  }, []);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="font-mono h-12">
@@ -35,8 +42,11 @@ export function AppSelection({ isMobile }: { isMobile: boolean }) {
           Apps
         </DropdownMenuLabel>
         <DropdownMenuGroup className="**:data-[slot=dropdown-menu-item]:cursor-pointer">
-          <DropdownMenuItem>Todo</DropdownMenuItem>
-          <DropdownMenuItem>Dari</DropdownMenuItem>
+          {MenuItems.map((item, index) => (
+            <DropdownMenuItem key={index} onClick={() => router.push(item.link)}>
+              {item.icon} {item.label}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

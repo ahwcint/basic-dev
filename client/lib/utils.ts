@@ -24,3 +24,15 @@ export function inputGuardNumber(onChange: (...args: unknown[]) => void) {
 export function isScrolledToBottom(el: HTMLElement, offset = 1): boolean {
   return el.scrollHeight - el.scrollTop <= el.clientHeight + offset;
 }
+
+export function createExampleFiles(total: number): File[] {
+  const files: File[] = [];
+
+  for (let i = 0; i < total; i++) {
+    const content = 'this is sample files ' + i;
+    const file = new File([content], `file-${i + 1}.txt`);
+    files.push(file);
+  }
+
+  return files;
+}

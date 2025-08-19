@@ -150,9 +150,10 @@
 }
 
 @utility background-primary {
-  background-image: url('/background.svg');
+  /* background-image: url('/background.svg');
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: cover; */
+  @apply bg-gradient-to-br from-gray-900 via-slate-900 to-zinc-900
 }
 
 @utility glass-morphism {

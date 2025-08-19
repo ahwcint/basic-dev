@@ -8,9 +8,9 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { SocketRooms } from '@/hooks/use-socket/type';
 import { useAuth } from '@/lib/context/auth-context';
-import { ChevronDownIcon, SendHorizonalIcon } from 'lucide-react';
+import { ChevronDownIcon, SendHorizonalIcon as SendHorizontalIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Resolver, useForm } from 'react-hook-form';
 import { ScrollArea, ScrollBar } from '../ui/scroll-area';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,7 +27,14 @@ type Chat = {
   createdAt: number;
   system?: boolean;
 };
-type FormType = { text: string };
+
+const formSchema = z.object({
+  input: z.string().trim().min(0).max(200).default(''),
+});
+
+const initialValues = formSchema.parse({});
+
+type FormType = z.infer<typeof formSchema>;
 
 export function HallChat() {
   const { user } = useAuth();
@@ -41,12 +48,8 @@ export function HallChat() {
   const [showScrollDownBtn, setShowScrollDownBtn] = useState(!isUserNearBottomRef.current);
 
   const form = useForm<FormType>({
-    defaultValues: { text: '' },
-    resolver: zodResolver(
-      z.object({
-        text: z.string().trim().min(1).max(200),
-      }),
-    ),
+    defaultValues: initialValues,
+    resolver: zodResolver(formSchema) as Resolver<FormType>,
   });
 
   const handleScrollLastMsg = useCallback(() => {
@@ -74,7 +77,7 @@ export function HallChat() {
   const handleSendMsg = (data: FormType) => {
     const payload = {
       id: `${Date.now()}-${user?.username}`,
-      msg: data.text,
+      msg: data.input,
       sender: user?.username,
       createdAt: Date.now(),
     };
@@ -116,7 +119,7 @@ export function HallChat() {
   }, [scrollDownHandler]);
   return (
     <>
-      <Card className="rounded-lg p-0 grow overflow-hidden relative !glass-morphism">
+      <Card className="p-0 grow overflow-hidden relative bg-transparent">
         <ScrollArea
           className="size-full p-3 *:data-[slot=scroll-area-viewport]:*:!block"
           viewportRef={viewportRef}
@@ -137,13 +140,24 @@ export function HallChat() {
         <Form {...form}>
           <BaseFormField
             className="grow"
-            name="text"
+            name="input"
             formControl={form.control}
             render={({ field }) => (
-              <Input {...field} placeholder=". . . ." maxLength={200} className="!glass-morphism" />
+              <div className="relative">
+                <Input
+                  {...field}
+                  placeholder="Type a message..."
+                  maxLength={200}
+                  className="rounded-full pr-[4rem]"
+                />
+                <span
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none ${field.value.length === 200 ? 'text-red-500' : ''}`}
+                >
+                  {field.value.length || 0}/{200}
+                </span>
+              </div>
             )}
             noMessageError
-            toastError
           />
           <Button
             size="icon"
@@ -151,7 +165,7 @@ export function HallChat() {
             onMouseDown={(e) => e.preventDefault()}
             className="rounded-full"
           >
-            <SendHorizonalIcon />
+            <SendHorizontalIcon className="-rotate-45" />
           </Button>
         </Form>
       </form>
