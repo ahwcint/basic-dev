@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,9 +8,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
-import { ChevronsUpDownIcon, FileArchive } from 'lucide-react';
+import { ChevronsUpDownIcon, LayoutGrid } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo } from 'react';
+import { MenuItems } from './preset-data';
 
 export function AppSelection({ isMobile }: { isMobile: boolean }) {
   const router = useRouter();
@@ -18,17 +19,14 @@ export function AppSelection({ isMobile }: { isMobile: boolean }) {
     return isMobile ? undefined : 'right';
   }, [isMobile]);
 
-  const MenuItems = useMemo(() => {
-    return [{ icon: <FileArchive />, label: 'ข้าวตัง', link: '/files-manipulation' }];
-  }, []);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="font-mono h-12">
         <SidebarMenuButton isActive size={'lg'}>
           <Avatar className="rounded-sm">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>
+              <LayoutGrid />
+            </AvatarFallback>
           </Avatar>
           <ChevronsUpDownIcon className="ml-auto" />
         </SidebarMenuButton>

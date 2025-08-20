@@ -10,17 +10,32 @@ import {
   SelectTrigger,
 } from '@/components/ui/select';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { TableFolder } from './table-folder';
 import { Table } from '@tanstack/react-table';
 import { FileArchive } from 'lucide-react';
 import { BlobWriter, ZipWriter } from '@zip.js/zip.js';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import Image from 'next/image';
 
-export function FilesManipulation() {
+const gifUrlState = {
+  sleep:
+    'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmVwdjk0cjR2OHB5MGF1aXB1NjBjYzI3MXBoMWZwcTNlbXBsbXpjbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yFQ0ywscgobJK/giphy.gif',
+  working:
+    'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmVwdjk0cjR2OHB5MGF1aXB1NjBjYzI3MXBoMWZwcTNlbXBsbXpjbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lJNoBCvQYp7nq/giphy.gif',
+  almost:
+    'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dGVhdjRucGpzOWplMzlmZDMwMjdqbTBtbnJnZTY0a3lhY2pxeGQ2aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/YJ85eVpdZDy7e/giphy.gif',
+};
+
+export function FilesManipulationModule() {
   const [files, setFiles] = useState<File[]>([]);
   const [selectedSort, setSelectedSort] = useState<string>('none');
   const [gifShown, setGifShown] = useState<string>('');
@@ -80,29 +95,22 @@ export function FilesManipulation() {
       const a = document.createElement('a');
       a.href = url;
       a.download = 'sorted_files.zip';
+
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // wait for cat to rest
+
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
       if ((err as DOMException).name !== 'AbortError') {
         console.error(err);
         toast.error('Export failed');
+      } else {
+        toast.success('Export aborted');
       }
     } finally {
       setIsExporting(false);
     }
   };
-
-  const gifUrlState = useMemo(
-    () => ({
-      sleep:
-        'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmVwdjk0cjR2OHB5MGF1aXB1NjBjYzI3MXBoMWZwcTNlbXBsbXpjbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/yFQ0ywscgobJK/giphy.gif',
-      working:
-        'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmVwdjk0cjR2OHB5MGF1aXB1NjBjYzI3MXBoMWZwcTNlbXBsbXpjbCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lJNoBCvQYp7nq/giphy.gif',
-      almost:
-        'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3dGVhdjRucGpzOWplMzlmZDMwMjdqbTBtbnJnZTY0a3lhY2pxeGQ2aCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/YJ85eVpdZDy7e/giphy.gif',
-    }),
-    [],
-  );
 
   useEffect(() => {
     if (progress >= 80) {
@@ -112,7 +120,7 @@ export function FilesManipulation() {
     } else {
       setGifShown(gifUrlState.sleep);
     }
-  }, [progress, gifUrlState]);
+  }, [progress]);
 
   return (
     <div className="h-full overflow-hidden p-4 flex flex-col gap-2">
@@ -139,7 +147,7 @@ export function FilesManipulation() {
       ) : (
         <>
           <div>
-            <Select onValueChange={handleSortChange}>
+            <Select onValueChange={handleSortChange} value={selectedSort}>
               <SelectTrigger>
                 Sort by:{' '}
                 {TableFolder.selectObjectMap[
@@ -161,7 +169,7 @@ export function FilesManipulation() {
             <Button variant={'outline'} disabled>
               Preview is under development
             </Button>
-            <Button variant={'default'} onClick={handleExportFiles}>
+            <Button variant={'default'} onClick={handleExportFiles} disabled={isExporting}>
               Export
             </Button>
           </div>
@@ -169,15 +177,8 @@ export function FilesManipulation() {
       )}
 
       {/* progression screen */}
-
-      <Dialog
-        open={isExporting}
-        onOpenChange={async () => {
-          setIsExporting(false);
-          controllerRef.current?.abort();
-        }}
-      >
-        <DialogContent>
+      <Dialog open={isExporting}>
+        <DialogContent showCloseButton={false}>
           <DialogHeader>
             <DialogTitle>Exporting files...</DialogTitle>
           </DialogHeader>
@@ -192,6 +193,17 @@ export function FilesManipulation() {
             />
           </div>
           <Progress value={progress} />
+          <DialogFooter>
+            <Button
+              variant={'destructive'}
+              onClick={() => {
+                setIsExporting(true);
+                controllerRef.current?.abort();
+              }}
+            >
+              Cancel this progress
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
