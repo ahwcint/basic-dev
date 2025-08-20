@@ -19,6 +19,7 @@ import { PropsWithChildren } from 'react';
 import { AppSelection } from './app-selection';
 import { FooterSidebar } from './footer-sidebar';
 import { SettingsIcon } from 'lucide-react';
+import { useAuth } from '@/lib/context/auth-context';
 
 export function MainSideBarWrapper({ children }: PropsWithChildren) {
   return (
@@ -30,9 +31,11 @@ export function MainSideBarWrapper({ children }: PropsWithChildren) {
 
 function MainSideBar({ children }: PropsWithChildren) {
   const { isMobile } = useSidebar();
+  const { token } = useAuth();
+
   return (
     <>
-      <AppSideBar isMobile={isMobile} />
+      {token && <AppSideBar isMobile={isMobile} />}
       {children}
       {isMobile && <SidebarTrigger className="mt-2 absolute top-0 right-2" size="lg" />}
     </>

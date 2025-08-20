@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import { useMemo } from 'react';
 import { ButtonModeToggle } from '../mode-toggle';
 
 export function FooterSidebar({ isMobile }: { isMobile: boolean }) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const side = useMemo(() => {
     return isMobile ? undefined : 'right';
   }, [isMobile]);
@@ -24,8 +24,7 @@ export function FooterSidebar({ isMobile }: { isMobile: boolean }) {
       <DropdownMenuTrigger asChild className="font-mono h-12">
         <SidebarMenuButton isActive size={'lg'}>
           <Avatar className="rounded-sm">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarFallback>{user.username.slice(0, 2)}</AvatarFallback>
           </Avatar>
           <SettingsIcon className="ml-auto" />
         </SidebarMenuButton>
