@@ -6,7 +6,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -18,8 +17,10 @@ import {
 import { PropsWithChildren } from 'react';
 import { AppSelection } from './app-selection';
 import { FooterSidebar } from './footer-sidebar';
-import { SettingsIcon } from 'lucide-react';
 import { useAuth } from '@/lib/context/auth-context';
+import { CustomTooltip } from '../custom-tool-tip';
+import { useRouter } from 'next/navigation';
+import { sidebarMenuItems } from './data/sidebar-menu-data';
 
 export function MainSideBarWrapper({ children }: PropsWithChildren) {
   return (
@@ -43,6 +44,8 @@ function MainSideBar({ children }: PropsWithChildren) {
 }
 
 function AppSideBar({ isMobile }: { isMobile: boolean }) {
+  const router = useRouter();
+
   return (
     <Sidebar className="relative" variant="floating">
       <SidebarHeader>
@@ -55,14 +58,19 @@ function AppSideBar({ isMobile }: { isMobile: boolean }) {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <SettingsIcon />
-                  Settings
-                </SidebarMenuButton>
+                {sidebarMenuItems.map((item, index) => (
+                  <SidebarMenuButton
+                    key={item.title + index}
+                    onClick={() => router.replace(item.href)}
+                  >
+                    <CustomTooltip content={item.title} side="right" asChild>
+                      {item.icon}
+                    </CustomTooltip>
+                  </SidebarMenuButton>
+                ))}
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
