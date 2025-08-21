@@ -25,6 +25,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import Image from 'next/image';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 const gifUrlState = {
   sleep:
@@ -37,6 +44,7 @@ const gifUrlState = {
 
 export function FilesManipulationModule() {
   const [files, setFiles] = useState<File[]>([]);
+  const [openPreview, setOpenPreview] = useState<boolean>(false);
   const [selectedSort, setSelectedSort] = useState<string>('none');
   const [gifShown, setGifShown] = useState<string>('');
   const [isExporting, setIsExporting] = useState<boolean>(false);
@@ -75,6 +83,7 @@ export function FilesManipulationModule() {
     if (!selectedFiles) return setIsExporting(false);
     controllerRef.current = new AbortController(); // create new abort controller when exporting files
 
+    const filesNameMap = new Map<string, number>();
     try {
       const writer = new ZipWriter(new BlobWriter('application/zip'), {
         signal: controllerRef.current.signal,
@@ -84,10 +93,20 @@ export function FilesManipulationModule() {
         const file = selectedFiles[index];
         setProgress(((1 + Number(index)) / selectedFiles.length) * 100);
 
-        if (controllerRef.current.signal.aborted) continue; // skip if aborted
-        await writer.add(`${file.type}/${file.name}`, file.stream(), {
-          signal: controllerRef.current.signal,
-        });
+        // check file name duplicated
+        if (filesNameMap.has(file.name)) {
+          filesNameMap.set(file.name, filesNameMap.get(file.name)! + 1);
+        } else {
+          filesNameMap.set(file.name, 0);
+        }
+
+        await writer.add(
+          `${file.type}/${file.name}${filesNameMap.get(file.name) ? ` (${filesNameMap.get(file.name)})` : ''}`,
+          file.stream(),
+          {
+            signal: controllerRef.current.signal,
+          },
+        );
       }
       const blob = await writer.close();
 
@@ -103,7 +122,7 @@ export function FilesManipulationModule() {
     } catch (err) {
       if ((err as DOMException).name !== 'AbortError') {
         console.error(err);
-        toast.error('Export failed');
+        toast.error('Export failed please contact aummer');
       } else {
         toast.success('Export aborted');
       }
@@ -134,7 +153,7 @@ export function FilesManipulationModule() {
       </Button>
       <Input
         ref={inputRef}
-        hidden={files.length <= 0}
+        hidden
         type="file"
         multiple
         placeholder="เลือกโฟลเดอร์"
@@ -146,6 +165,7 @@ export function FilesManipulationModule() {
         <p>กรุณาเลือกโฟลเดอร์ที่มีไฟล์</p>
       ) : (
         <>
+          <span>{`${files.length} files selected.`}</span>
           <div>
             <Select onValueChange={handleSortChange} value={selectedSort}>
               <SelectTrigger>
@@ -166,8 +186,8 @@ export function FilesManipulationModule() {
           </div>
           <TableFolder files={files} tableRef={tableRef} />
           <div className="flex justify-end gap-2">
-            <Button variant={'outline'} disabled>
-              Preview is under development
+            <Button variant={'outline'} onClick={() => setOpenPreview(true)}>
+              Preview
             </Button>
             <Button variant={'default'} onClick={handleExportFiles} disabled={isExporting}>
               Export
@@ -176,7 +196,7 @@ export function FilesManipulationModule() {
         </>
       )}
 
-      {/* progression screen */}
+      {/* progression dialog */}
       <Dialog open={isExporting}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
@@ -206,6 +226,51 @@ export function FilesManipulationModule() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* preview dialog */}
+      <Dialog open={openPreview} onOpenChange={setOpenPreview}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Preview</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[20rem]">
+            <GroupByType files={files} />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+function GroupByType({ files }: { files: File[] }) {
+  const grouped = files.reduce(
+    (acc, file) => {
+      const key = file.type || 'unknown';
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(file);
+      return acc;
+    },
+    {} as Record<string, File[]>,
+  );
+
+  return (
+    <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+      {Object.entries(grouped).map(([type, files], index) => (
+        <AccordionItem key={`${type}-${index}`} value={`${type}-${index}`}>
+          <AccordionTrigger>
+            {type.replaceAll('/', ' -> ')} | {files.length} files
+          </AccordionTrigger>
+          <AccordionContent>
+            {files.map((file, subIndex) => (
+              <div key={`${file.name}-${subIndex}-accordion-content`}>
+                <strong>{file.name}</strong>
+              </div>
+            ))}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }
